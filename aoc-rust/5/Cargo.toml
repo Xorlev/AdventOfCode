@@ -1,0 +1,7 @@
+[package]
+name = "5"
+version = "0.1.0"
+authors = ["Michael Rose <elementation@gmail.com>"]
+
+[dependencies]
+rust-crypto = "*"

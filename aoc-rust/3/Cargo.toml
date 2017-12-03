@@ -1,0 +1,7 @@
+[package]
+name = "3"
+version = "0.1.0"
+authors = ["Michael Rose <elementation@gmail.com>"]
+
+[dependencies]
+itertools = "0.5.4"

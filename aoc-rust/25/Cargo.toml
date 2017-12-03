@@ -1,0 +1,7 @@
+[package]
+name = "12"
+version = "0.1.0"
+authors = ["Michael Rose <elementation@gmail.com>"]
+
+[dependencies]
+regex = "*"
