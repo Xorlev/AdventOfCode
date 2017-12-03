@@ -1,82 +1,3 @@
-/**
-@ToString
-    @Getter
-    @EqualsAndHashCode
-    public static class AStarResult<T> {
-        private final boolean failed;
-        private final ImmutableList<T> path;
-
-        private AStarResult() {
-            this.failed = true;
-            this.path = ImmutableList.of();
-        }
-
-        public AStarResult(Iterable<T> path) {
-            this.failed = false;
-            this.path = ImmutableList.copyOf(path);
-        }
-
-        public static <T> AStarResult<T> failed() {
-            return new AStarResult<>();
-        }
-    }
-    @Value
-    public static class ValueWithCost<T> implements Comparable<ValueWithCost<T>> {
-        T value;
-        double cost;
-
-        @Override
-        public int compareTo(ValueWithCost<T> o) {
-            return Double.compare(cost, o.cost);
-        }
-
-    }
-    public static <T> AStarResult<T> fromPath(T p, Map<T, T> parentGraph) {
-        Deque<T> points = new ArrayDeque<>();
-        points.push(p);
-
-        while(p != null) {
-            p = parentGraph.get(p);
-
-            if(p != null) {
-                points.push(p);
-            }
-        }
-
-        // Points were reversed by using Deque as a stack
-        return new AStarResult<>(points);
-    }
-
-    public static <T> AStarResult<T> astarSearch(T start, Function<T, Double> hFunc, Function<T, List<T>> moveFunc) {
-        PriorityQueue<ValueWithCost<T>> frontier = new PriorityQueue<>(
-            Collections.singleton(new ValueWithCost<>(start, hFunc.apply(start)))
-        );
-        Map<T, T> previous = new HashMap<>();
-        Map<T, Double> pathCost = new HashMap<>();
-        pathCost.put(start, 0.0);
-        previous.put(start, null);
-
-        while(!frontier.isEmpty()) {
-            ValueWithCost<T> p = frontier.poll();
-
-            if(Math.abs(0 - hFunc.apply(p.value)) < 1e-6) {
-                return fromPath(p.value, previous);
-            }
-
-            double newCost = pathCost.get(p.value) + 1;
-            for(T newPoint : moveFunc.apply(p.value)) {
-                Double cost = pathCost.get(newPoint);
-                if(cost == null || newCost < cost) {
-                    frontier.add(new ValueWithCost<>(newPoint, newCost + hFunc.apply(newPoint)));
-                    pathCost.put(newPoint, newCost);
-                    previous.put(newPoint, p.value);
-                }
-            }
-        }
-
-        return AStarResult.failed();
-    }
-*/
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
@@ -91,23 +12,6 @@ pub struct AStarResult<T: Eq + Hash> {
     pub path: Vec<T>
 }
 
-/*
-    public static <T> AStarResult<T> fromPath(T p, Map<T, T> parentGraph) {
-        Deque<T> points = new ArrayDeque<>();
-        points.push(p);
-
-        while(p != null) {
-            p = parentGraph.get(p);
-
-            if(p != null) {
-                points.push(p);
-            }
-        }
-
-        // Points were reversed by using Deque as a stack
-        return new AStarResult<>(points);
-    }
-*/
 impl<T: Clone + Eq + Hash> AStarResult<T> {
     fn from_path(start: T, path: HashMap<T, T>) -> AStarResult<T> {
         let mut points = Vec::new();
@@ -148,7 +52,8 @@ impl <T: Eq> PartialOrd for ValueWithCost<T> {
     }
 }
 
-pub fn search<'a, T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) -> Vec<T>>(start: &'a T, h_fn: HF, move_fn: MF) -> AStarResult<T> {
+pub fn search<'a, T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) ->
+        Vec<T>>(start: &'a T, h_fn: HF, move_fn: MF) -> AStarResult<T> {
     let mut frontier: BinaryHeap<ValueWithCost<T>> = BinaryHeap::new();
     frontier.push(ValueWithCost {
         value: start.to_owned(),
@@ -160,18 +65,15 @@ pub fn search<'a, T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) -
 
 
     while let Some(ValueWithCost { value, cost }) = frontier.pop() {
-//        println!("frontier = {:?}", frontier);
         if h_fn(&value) == 0 {
             return AStarResult::from_path(value, previous);
         }
 
         let new_cost = get_cost(&value, &path_cost).unwrap() + 1;
         for new_value in move_fn(&value).into_iter() {
-//            println!("New candidate: {:?}, new_cost={}", new_value, new_cost);
             let current_cost = get_cost(&new_value, &path_cost);
 
             if current_cost.is_none() || new_cost < current_cost.unwrap() {
-//                println!("Better than current: {:?}", current_cost);
                 let nv = new_value.to_owned();
 
                 frontier.push(ValueWithCost {
