@@ -242,12 +242,12 @@ public class Util {
 
     @Value
     public static class AssertChain<T> {
-        private T expected;
+        private T actual;
 
-        public void isEqualTo(T actual) {
-            if (!expected.equals(actual)) {
+        public void isEqualTo(T expected) {
+            if (!actual.equals(expected)) {
                 throw new AssertionException(
-                        String.format("Assertion failed: expected [%s], actual [%s]", expected, actual));
+                        String.format("Assertion failed: actual [%s], expected [%s]", actual, expected));
             }
         }
     }

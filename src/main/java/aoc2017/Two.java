@@ -42,12 +42,12 @@ public class Two {
                 )
         );
 
-        Util.assertThat(18).isEqualTo(checksumPartOne(demoSpreadsheet1));
+        Util.assertThat(checksumPartOne(demoSpreadsheet1)).isEqualTo(18);
 
         Table<Integer, Integer, Integer> spreadsheet = readSpreadsheet(Util.input(2017, 2));
         System.out.println("Part 1: " + checksumPartOne(spreadsheet));
 
-        Util.assertThat(9).isEqualTo(checksumPartTwo(demoSpreadsheet2));
+        Util.assertThat(checksumPartTwo(demoSpreadsheet2)).isEqualTo(9);
 
         System.out.println("Part 2: " + checksumPartTwo(spreadsheet));
     }

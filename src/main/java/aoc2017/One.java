@@ -18,18 +18,18 @@ public class One {
     public static void main(String[] args) {
         String input = Iterables.getOnlyElement(Util.input(2017, 1));
 
-        Util.assertThat(3).isEqualTo(solvePartOne("1122"));
-        Util.assertThat(4).isEqualTo(solvePartOne("1111"));
-        Util.assertThat(0).isEqualTo(solvePartOne("1234"));
-        Util.assertThat(9).isEqualTo(solvePartOne("91212129"));
+        Util.assertThat(solvePartOne("1122")).isEqualTo(3);
+        Util.assertThat(solvePartOne("1111")).isEqualTo(4);
+        Util.assertThat(solvePartOne("1234")).isEqualTo(0);
+        Util.assertThat(solvePartOne("91212129")).isEqualTo(9);
 
         System.out.println("Part 1 solution: " + solvePartOne(input));
 
-        Util.assertThat(6).isEqualTo(solvePartTwo("1212"));
-        Util.assertThat(0).isEqualTo(solvePartTwo("1221"));
-        Util.assertThat(4).isEqualTo(solvePartTwo("123425"));
-        Util.assertThat(12).isEqualTo(solvePartTwo("123123"));
-        Util.assertThat(4).isEqualTo(solvePartTwo("12131415"));
+        Util.assertThat(solvePartTwo("1212")).isEqualTo(6);
+        Util.assertThat(solvePartTwo("1221")).isEqualTo(0);
+        Util.assertThat(solvePartTwo("123425")).isEqualTo(4);
+        Util.assertThat(solvePartTwo("123123")).isEqualTo(12);
+        Util.assertThat(solvePartTwo("12131415")).isEqualTo(4);
 
         System.out.println("Part 2 solution: " + solvePartTwo(input));
     }

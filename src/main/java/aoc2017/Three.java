@@ -34,11 +34,11 @@ public class Three {
     public static void main(String[] args) {
         int input = 265149;
 
-        Util.assertThat(1).isEqualTo(solvePartOne(2));
-        Util.assertThat(31).isEqualTo(solvePartOne(1024));
-        Util.assertThat(2).isEqualTo(solvePartOne(23));
-        Util.assertThat(3).isEqualTo(solvePartOne(24));
-        Util.assertThat(3).isEqualTo(solvePartOne(12));
+        Util.assertThat(solvePartOne(2)).isEqualTo(1);
+        Util.assertThat(solvePartOne(1024)).isEqualTo(31);
+        Util.assertThat(solvePartOne(23)).isEqualTo(2);
+        Util.assertThat(solvePartOne(24)).isEqualTo(3);
+        Util.assertThat(solvePartOne(12)).isEqualTo(3);
 
 
         System.out.println("Part 1: " + solvePartOne(input));
