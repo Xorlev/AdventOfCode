@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class Five {
     public static void main(String[] args) {
@@ -21,37 +22,21 @@ public class Five {
     }
 
     private static int findExit(List<Integer> offsets) {
-        int steps = 0;
-        int pc = 0;
-        while(true) {
-            steps++;
-
-            int offset = offsets.get(pc);
-            offsets.set(pc, offset + 1);
-            pc += offset;
-
-            if(pc >= offsets.size()) {
-                break;
-            }
-        }
-
-        return steps;
+        return findExit(offsets, unused -> 1);
     }
 
     private static int findExitPartTwo(List<Integer> offsets) {
+        return findExit(offsets, offset -> offset >= 3 ? -1 : 1);
+    }
+
+    private static int findExit(List<Integer> offsets, Function<Integer, Integer> jumpFn) {
         int steps = 0;
         int pc = 0;
         while(true) {
             steps++;
 
             int offset = offsets.get(pc);
-
-            int modifier = 1;
-            if (offset >= 3) {
-                modifier = -1;
-            }
-
-            offsets.set(pc, offset + modifier);
+            offsets.set(pc, offset + jumpFn.apply(offset));
             pc += offset;
 
             if(pc >= offsets.size()) {
