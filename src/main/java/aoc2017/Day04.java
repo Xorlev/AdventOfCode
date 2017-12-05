@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Four {
+public class Day04 {
     public static void main(String[] args) {
         List<String> input = Util.input(2017, 4);
 

@@ -30,7 +30,7 @@ import java.util.Map;
  Data from square 23 is carried only 2 steps: up twice.
  Data from square 1024 must be carried 31 steps.
  */
-public class Three {
+public class Day03 {
     public static void main(String[] args) {
         int input = 265149;
 

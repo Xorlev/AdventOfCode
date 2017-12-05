@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.Function;
 
-public class Five {
+public class Day05 {
     public static void main(String[] args) {
         List<String> input = Util.input(2017, 5);
         ImmutableList<Integer> offsets = input.stream()

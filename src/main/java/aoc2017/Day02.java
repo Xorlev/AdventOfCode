@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  The third row's difference is 6.
  In this example, the spreadsheet's checksum would be 8 + 4 + 6 = 18.
  */
-public class Two {
+public class Day02 {
     public static void main(String[] args) {
         Table<Integer, Integer, Integer> demoSpreadsheet1 = readSpreadsheet(
                 ImmutableList.of(

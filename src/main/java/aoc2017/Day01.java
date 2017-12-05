@@ -14,7 +14,7 @@ import com.google.common.collect.Iterables;
  * 1234 produces 0 because no digit matches the next.
  * 91212129 produces 9 because the only digit that matches the next one is the last digit, 9.
  */
-public class One {
+public class Day01 {
     public static void main(String[] args) {
         String input = Iterables.getOnlyElement(Util.input(2017, 1));
 
