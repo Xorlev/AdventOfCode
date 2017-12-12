@@ -88,52 +88,6 @@ public class Util {
         return result;
     }
 
-    @Value
-    public static class Point {
-        public static Point ZERO = new Point(0,0);
-
-        int x, y;
-
-        public boolean isNatural() {
-            return x >= 0 && y >= 0;
-        }
-
-        public Point add(Point point) {
-            return new Point(x + point.x, y + point.y);
-        }
-
-    }
-
-    public static List<Point> neighbors4(Point p) {
-        return Lists.newArrayList(
-                new Point(p.x - 1, p.y),
-                new Point(p.x + 1, p.y),
-                new Point(p.x, p.y - 1),
-                new Point(p.x, p.y + 1)
-        );
-    }
-
-    public static List<Point> neighbors8(Point p) {
-        return Lists.newArrayList(
-                new Point(p.x - 1, p.y),
-                new Point(p.x + 1, p.y),
-                new Point(p.x, p.y - 1),
-                new Point(p.x, p.y + 1),
-                new Point(p.x - 1, p.y - 1),
-                new Point(p.x + 1, p.y + 1),
-                new Point(p.x + 1, p.y - 1),
-                new Point(p.x - 1, p.y + 1)
-        );
-    }
-
-    public static double manhattanDistance(Point o, Point t) {
-        return Math.abs(o.x - t.x) + Math.abs(o.y - t.y);
-    }
-
-    public static double euclideanDistance(Point o, Point t) {
-        return Math.hypot(o.x - t.x, o.y - t.y);
-    }
-
     @ToString
     @Getter
     @EqualsAndHashCode

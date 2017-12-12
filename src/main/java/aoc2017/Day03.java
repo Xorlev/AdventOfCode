@@ -1,5 +1,6 @@
 package aoc2017;
 
+import aoc.Point;
 import aoc.Util;
 
 import java.util.HashMap;
@@ -48,9 +49,9 @@ public class Day03 {
     }
 
     static int solvePartOne(int input) {
-        Util.Point pos = getPos(input);
+        Point pos = getPos(input);
 
-        return (int) Util.manhattanDistance(pos, Util.Point.ZERO);
+        return (int) pos.manhattanDistance(Point.ZERO);
     }
 
     /**
@@ -67,12 +68,12 @@ public class Day03 {
      Square 5 only has the first and fourth squares as neighbors, so it gets the value 5.
      */
     static int solvePartTwo(int input) {
-        Map<Util.Point, Integer> value = new HashMap<>();
-        value.put(new Util.Point(0, 0), 1);
+        Map<Point, Integer> value = new HashMap<>();
+        value.put(new Point(0, 0), 1);
 
         for (int i = 2; i < input; i++) {
             int sum = 0;
-            for (Util.Point point : Util.neighbors8(getPos(i))) {
+            for (Point point : getPos(i).neighbors8()) {
                 sum += value.getOrDefault(point, 0);
             }
 
@@ -86,9 +87,9 @@ public class Day03 {
         return -1;
     }
 
-    private static Util.Point getPos(int n) {
+    private static Point getPos(int n) {
         if (n == 1) {
-            return new Util.Point(0,0 );
+            return new Point(0,0 );
         }
 
         int sideLength = (int) Math.ceil(Math.sqrt(n));
@@ -123,6 +124,6 @@ public class Day03 {
             x = n - bottomRight + sideLength/2;
         }
 
-        return new Util.Point(x, y);
+        return new Point(x, y);
     }
 }
