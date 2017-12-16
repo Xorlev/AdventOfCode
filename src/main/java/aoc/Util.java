@@ -2,6 +2,7 @@ package aoc;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,6 +30,10 @@ import java.util.stream.Collectors;
  * @author Michael Rose (xorlev)
  */
 public class Util {
+    public static String inputLine(int year, int day) {
+        return Iterables.getOnlyElement(input(year, day));
+    }
+
     public static List<String> input(int year, int day) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 Util.class.getResourceAsStream("/" + year + "/" + day + "/input.txt")));
