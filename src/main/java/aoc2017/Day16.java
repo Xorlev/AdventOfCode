@@ -4,7 +4,6 @@ import aoc.Util;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import lombok.Value;
 
@@ -31,7 +30,7 @@ public class Day16 {
 
     static List<Character> applyMoves(List<Character> programs, List<Move> moves, int times) {
         ImmutableList<Character> initialState = ImmutableList.copyOf(programs);
-        ImmutableList<Character> lastState = ImmutableList.copyOf(programs);
+        ImmutableList<Character> lastState;
 
         int cycleLength = 0;
         for (int i = 0; i < times; i++) {

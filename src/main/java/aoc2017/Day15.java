@@ -29,8 +29,8 @@ public class Day15 {
     private static int findLowerMatches(Generator a, Generator b, int pairs) {
         int matches = 0;
         for (int i = 0; i < pairs; i++) {
-            while(a.nextValue() < 0) {}
-            while(b.nextValue() < 0) {}
+            while(a.nextValue() < 0);
+            while(b.nextValue() < 0);
 
             if (a.lower() == b.lower()) {
                 matches++;
