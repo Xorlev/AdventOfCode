@@ -77,7 +77,7 @@ public class Day10 {
 
         StringBuilder sb = new StringBuilder();
         for (int value : dense) {
-            sb.append(Integer.toHexString(value));
+            sb.append(String.format("%02X", value));
         }
 
         return sb.toString();
