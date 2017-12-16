@@ -17,24 +17,24 @@ public class Day10 {
                 .map(Integer::parseInt)
                 .collect(ImmutableList.toImmutableList());
 
-        List<Integer> testOutput = knotHash(ImmutableList.of(3, 4, 1, 5), generateInput(5), 1);
-        Util.assertThat(testOutput.get(0) * testOutput.get(1)).isEqualTo(12);
+        int[] testOutput = knotHash(ImmutableList.of(3, 4, 1, 5), generateInput(5), 1);
+        Util.assertThat(testOutput[0] * testOutput[1]).isEqualTo(12);
 
-        List<Integer> part1Output = knotHash(p1, generateInput(256),1 );
-        int part1 = part1Output.get(0) * part1Output.get(1);
+        int[] part1Output = knotHash(p1, generateInput(256),1 );
+        int part1 = part1Output[0] * part1Output[1];
 
         System.out.println("Part 1: " + part1);
-
-        ImmutableList<Integer> p2 = part2Lengths(sequence);
-        String part2 = toHexHash(knotHash(p2, generateInput(256), 64));
-
-        System.out.println("Part 2: " + part2);
+        System.out.println("Part 2: " + knotHash(sequence));
     }
 
-    private static List<Integer> knotHash(ImmutableList<Integer> knotLengths, List<Integer> input, int rounds) {
+    static String knotHash(String input) {
+        return toHexHash(knotHash(strToLengths(input), generateInput(256), 64));
+    }
+
+    private static int[] knotHash(ImmutableList<Integer> knotLengths, int[] input, int rounds) {
         int pos = 0;
         int skipSize = 0;
-        int listLen = input.size();
+        int listLen = input.length;
         for (int r = 0; r < rounds; r++) {
             for (int length : knotLengths) {
                 if (length > 1) {
@@ -42,9 +42,9 @@ public class Day10 {
                     int destination = (pos + length - 1) % listLen;
 
                     for (int i = 0; i < length / 2; i++) {
-                        int temp = input.get(target);
-                        input.set(target, input.get(destination));
-                        input.set(destination, temp);
+                        int temp = input[target];
+                        input[target] = input[destination];
+                        input[destination] = temp;
 
                         target = (target + 1) % listLen;
                         destination--;
@@ -64,13 +64,13 @@ public class Day10 {
         return input;
     }
 
-    private static String toHexHash(List<Integer> sparse) {
+    private static String toHexHash(int[] sparse) {
         List<Integer> dense = new ArrayList<>();
 
-        for (int i = 0; i < sparse.size(); i += 16) {
+        for (int i = 0; i < sparse.length; i += 16) {
             int block = 0;
             for (int j = i; j < i+16; j++) {
-                block ^= sparse.get(j);
+                block ^= sparse[j];
             }
             dense.add(block);
         }
@@ -83,15 +83,15 @@ public class Day10 {
         return sb.toString();
     }
 
-    private static List<Integer> generateInput(int listLen) {
-        List<Integer> list = new ArrayList<>(listLen);
+    private static int[] generateInput(int listLen) {
+        int[] list = new int[listLen];
         for (int i = 0; i < listLen; i++) {
-            list.add(i);
+            list[i] = i;
         }
         return list;
     }
 
-    private static ImmutableList<Integer> part2Lengths(String input) {
+    private static ImmutableList<Integer> strToLengths(String input) {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < input.length(); i++) {
             list.add((int) input.charAt(i));
