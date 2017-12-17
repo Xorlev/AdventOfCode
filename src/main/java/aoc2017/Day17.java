@@ -30,21 +30,16 @@ public class Day17 {
     }
 
     private static int spinlockP2(int iterations, int steps) {
-        int zeroPos = 0;
-        int valueAfterZero = 0;
+        int value = 0;
         int pos = 0;
         for (int i = 1; i <= iterations; i++) {
             pos = (pos+steps)%(i) + 1;
 
-            if (pos == zeroPos+1) {
-                valueAfterZero = i;
-            }
-
-            if (pos < zeroPos) {
-                zeroPos++;
+            if (pos == 1) {
+                value = i;
             }
         }
 
-        return valueAfterZero;
+        return value;
     }
 }
