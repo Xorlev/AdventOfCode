@@ -147,14 +147,13 @@ public class Day18 {
     }
 
     static class Task {
-        private final Deque<Long> inputChannel;
-        private final Deque<Long> outputChannel;
+        private final Queue<Long> inputChannel;
+        private final Queue<Long> outputChannel;
         private final ImmutableList<Operation> operations;
         private final Map<String, Long> registers = new HashMap<>();
 
         private int pc = 0;
         private int sent = 0;
-        private boolean finished = false;
 
         Task(int programId, Deque<Long> inputChannel, Deque<Long> outputChannel, ImmutableList<Operation> operations) {
             this.inputChannel = inputChannel;
