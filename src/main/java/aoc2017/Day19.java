@@ -84,7 +84,7 @@ public class Day19 {
         int steps;
     }
 
-    enum Direction {
+    public enum Direction {
         UP {
             @Override
             public Point apply(Point point) {
