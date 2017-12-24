@@ -114,38 +114,6 @@ public class Day18 {
         }
     }
 
-    private static void getAndCombine(
-            Map<String, Long> registers, Operation operation, BiFunction<Long, Long, Long> combineFn) {
-        long lvalue = lvalue(registers, operation);
-        long rvalue = rvalue(registers, operation);
-
-        registers.put(operation.left, combineFn.apply(lvalue, rvalue));
-    }
-
-    private static long lvalue(Map<String, Long> registers, Operation operation) {
-        return value(registers, operation, Operation::getLeft);
-    }
-
-    private static long rvalue(Map<String, Long> registers, Operation operation) {
-        return value(registers, operation, Operation::getRight);
-    }
-
-    private static long value(Map<String, Long> registers, Operation operation, Function<Operation, String> getter) {
-        String v = getter.apply(operation);
-
-        long value;
-        if (valueIsRegister(v)) {
-            value = registers.getOrDefault(v, 0L);
-        } else {
-            value = Long.parseLong(v);
-        }
-        return value;
-    }
-
-    private static boolean valueIsRegister(String value) {
-        return value.charAt(0) >= 'a' && value.charAt(0) <= 'z';
-    }
-
     static class Task {
         private final Queue<Long> inputChannel;
         private final Queue<Long> outputChannel;
@@ -209,6 +177,39 @@ public class Day18 {
         }
     }
 
+
+    static void getAndCombine(
+            Map<String, Long> registers, Operation operation, BiFunction<Long, Long, Long> combineFn) {
+        long lvalue = lvalue(registers, operation);
+        long rvalue = rvalue(registers, operation);
+
+        registers.put(operation.left, combineFn.apply(lvalue, rvalue));
+    }
+
+    static long lvalue(Map<String, Long> registers, Operation operation) {
+        return value(registers, operation, Operation::getLeft);
+    }
+
+    static long rvalue(Map<String, Long> registers, Operation operation) {
+        return value(registers, operation, Operation::getRight);
+    }
+
+    static long value(Map<String, Long> registers, Operation operation, Function<Operation, String> getter) {
+        String v = getter.apply(operation);
+
+        long value;
+        if (valueIsRegister(v)) {
+            value = registers.getOrDefault(v, 0L);
+        } else {
+            value = Long.parseLong(v);
+        }
+        return value;
+    }
+
+    static boolean valueIsRegister(String value) {
+        return value.charAt(0) >= 'a' && value.charAt(0) <= 'z';
+    }
+
     @Value
     @Builder
     static class Operation {
@@ -231,6 +232,10 @@ public class Day18 {
                     opType = OpType.ADD;
                     value = parts[2];
                     break;
+                case "sub":
+                    opType = OpType.SUB;
+                    value = parts[2];
+                    break;
                 case "mul":
                     opType = OpType.MUL;
                     value = parts[2];
@@ -249,6 +254,10 @@ public class Day18 {
                     opType = OpType.JGZ;
                     value = parts[2];
                     break;
+                case "jnz":
+                    opType = OpType.JNZ;
+                    value = parts[2];
+                    break;
                 default:
                     throw new IllegalArgumentException("Could not parse op: " + opString);
             }
@@ -259,11 +268,13 @@ public class Day18 {
         enum OpType {
             SET,
             ADD,
+            SUB,
             MUL,
             MOD,
             SND,
             RCV,
-            JGZ;
+            JGZ,
+            JNZ;
         }
     }
 }
