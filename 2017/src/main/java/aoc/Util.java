@@ -11,14 +11,7 @@ import lombok.Value;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -219,5 +212,13 @@ public class Util {
         public AssertionException(String message) {
             super(message);
         }
+    }
+
+    public static List<Character> charListFromString(String input) {
+        List<Character> characters = new ArrayList<>();
+        for (int i = 0; i < input.length(); i++) {
+            characters.add(input.charAt(i));
+        }
+        return characters;
     }
 }
