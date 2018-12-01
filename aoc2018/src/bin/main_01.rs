@@ -7,8 +7,8 @@ fn main() ->  Result<(), Box<std::error::Error>> {
 
     let frequency_deltas: Vec<i32> = lines
         .iter()
-        .map(|delta| delta.parse::<i32>().unwrap())
-        .collect();
+        .map(|delta| delta.parse::<i32>())
+        .collect::<Result<Vec<i32>, std::num::ParseIntError>>()?;
 
     println!("Part 1: {}", time(|| part1(&frequency_deltas)));
     println!("Part 2: {}", time(|| part2(&frequency_deltas)));
