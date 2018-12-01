@@ -9,7 +9,7 @@ use std::path::Path;
 type IoResult<T> = Result<T, io::Error>;
 
 pub fn read(day: u32) -> IoResult<Vec<String>> {
-    let path_name = format!("input/{}/input.txt", day);
+    let path_name = format!("input/{:02}.txt", day);
     let path = Path::new(path_name.as_str());
     let file = File::open(path)?;
     let reader = BufReader::new(file);

@@ -1,5 +1,5 @@
 [package]
-name = "all"
+name = "util"
 version = "0.1.0"
 authors = ["Michael Rose <elementation@gmail.com>"]
 
