@@ -22,11 +22,11 @@ impl Claim {
     fn parse(claim_str: &String) -> Option<Claim> {
         if let Some(captures) = RE.captures(claim_str.as_str()) {
             return Some(Claim {
-                id: captures.get(1).unwrap().as_str().to_owned(),
-                from_left: captures.get(2).unwrap().as_str().parse::<usize>().unwrap(),
-                from_top: captures.get(3).unwrap().as_str().parse::<usize>().unwrap(),
-                height: captures.get(5).unwrap().as_str().parse::<usize>().unwrap(),
-                width: captures.get(4).unwrap().as_str().parse::<usize>().unwrap(),
+                id: captures[1].to_owned(),
+                from_left: captures[2].parse::<usize>().unwrap(),
+                from_top: captures[3].parse::<usize>().unwrap(),
+                width: captures[4].parse::<usize>().unwrap(),
+                height: captures[5].parse::<usize>().unwrap(),
             })
         }
 
