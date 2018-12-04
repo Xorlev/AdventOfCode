@@ -137,6 +137,7 @@ fn part1(state: &SolutionState) -> u32 {
     let sleepiest_guard = state
         .guard_to_minute_frequency
         .iter()
+        // Take guard -> (minute -> frequency) and make it (guard, minutes).
         .map(|histogram| {
             (histogram.0, histogram.1.iter().map(|bucket| bucket.1).sum::<u32>())
         })
@@ -147,6 +148,7 @@ fn part1(state: &SolutionState) -> u32 {
     // Find the most frequent minute the guard was asleep.
     let guard_minute_histogram = state.guard_to_minute_frequency.get(sleepiest_guard);
 
+    // Find the largest bucket (minute) this guard was asleep.
     let most_frequent_minute = match guard_minute_histogram {
         Some(histogram) => *histogram.iter().max_by_key(|v| *v.1).unwrap_or((&0, &0)).0,
         None => 0,
@@ -158,6 +160,8 @@ fn part1(state: &SolutionState) -> u32 {
 // Strategy 2: Of all guards, which guard is most frequently asleep on the same minute?
 fn part2(state: &SolutionState) -> u32 {
     // Find the minute a guard is most frequently asleep.
+    // We do this by flattening all of the buckets into (guard, minute, times_asleep) and doing a
+    // final O(n) pass over them to select the largest bucket.
     let sleepiest_minute_guard = state
         .guard_to_minute_frequency
         .iter()
