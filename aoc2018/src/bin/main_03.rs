@@ -1,7 +1,6 @@
 use failure::*;
 use lazy_static::*;
-use util::aoc::time;
-use util::aoc::input;
+use util::aoc::*;
 use std::cmp::max;
 use regex::Regex;
 
@@ -45,10 +44,10 @@ impl Claim {
 fn main() ->  Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(3)?;
     let claims: Vec<Claim> = lines.iter().map(Claim::parse).collect::<Result<Vec<_>, _>>()?;
-    let (size, grid) = build_grid(&claims);
+    let (size, grid) = time("Grid", || build_grid(&claims));
 
-    println!("Part 1: {:?}", time(|| part1(size, &grid)));
-    println!("Part 2: {:?}", time(|| part2(&grid, &claims)));
+    result("Part 1", || part1(size, &grid));
+    result("Part 2", || part2(&grid, &claims));
 
     Ok(())
 }

@@ -1,5 +1,4 @@
-use util::aoc::time;
-use util::aoc::input;
+use util::aoc::*;
 use std::collections::hash_set::HashSet;
 
 fn main() ->  Result<(), Box<std::error::Error>> {
@@ -10,8 +9,8 @@ fn main() ->  Result<(), Box<std::error::Error>> {
         .map(|delta| delta.parse::<i32>())
         .collect::<Result<Vec<i32>, std::num::ParseIntError>>()?;
 
-    println!("Part 1: {}", time(|| part1(&frequency_deltas)));
-    println!("Part 2: {}", time(|| part2(&frequency_deltas)));
+    result("Part 1", || part1(&frequency_deltas));
+    result("Part 2", || part2(&frequency_deltas));
 
     Ok(())
 }

@@ -1,12 +1,11 @@
-use util::aoc::time;
-use util::aoc::input;
+use util::aoc::*;
 use std::collections::hash_map::HashMap;
 
 fn main() ->  Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(2)?;
 
-    println!("Part 1: {}", time(|| part1(&lines)));
-    println!("Part 2: {:?}", time(|| part2(&lines)));
+    result("Part 1", || part1(&lines));
+    result("Part 2", || part2(&lines));
 
     Ok(())
 }
