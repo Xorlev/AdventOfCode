@@ -1,7 +1,7 @@
+use failure::*;
 use lazy_static::*;
 use util::aoc::time;
 use util::aoc::input;
-use std::collections::hash_map::HashMap;
 use std::cmp::max;
 use regex::Regex;
 
@@ -19,18 +19,18 @@ struct Claim {
 }
 
 impl Claim {
-    fn parse(claim_str: &String) -> Option<Claim> {
+    fn parse(claim_str: &String) -> Result<Claim, Error> {
         if let Some(captures) = RE.captures(claim_str.as_str()) {
-            return Some(Claim {
+            return Ok(Claim {
                 id: captures[1].to_owned(),
-                from_left: captures[2].parse::<usize>().unwrap(),
-                from_top: captures[3].parse::<usize>().unwrap(),
-                width: captures[4].parse::<usize>().unwrap(),
-                height: captures[5].parse::<usize>().unwrap(),
+                from_left: captures[2].parse::<usize>()?,
+                from_top: captures[3].parse::<usize>()?,
+                width: captures[4].parse::<usize>()?,
+                height: captures[5].parse::<usize>()?,
             })
         }
 
-        None
+        Err(format_err!("Couldn't parse claim: {}", claim_str))
     }
 
     fn abs_height(&self) -> usize {
@@ -44,10 +44,10 @@ impl Claim {
 
 fn main() ->  Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(3)?;
-    let claims: Vec<Claim> = lines.iter().filter_map(Claim::parse).collect();
+    let claims: Vec<Claim> = lines.iter().map(Claim::parse).collect::<Result<Vec<_>, _>>()?;
     let (size, grid) = build_grid(&claims);
 
-    println!("Part 1: {}", time(|| part1(size, &grid)));
+    println!("Part 1: {:?}", time(|| part1(size, &grid)));
     println!("Part 2: {:?}", time(|| part2(&grid, &claims)));
 
     Ok(())
