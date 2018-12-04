@@ -1,8 +1,8 @@
 use failure::*;
 use lazy_static::*;
-use util::aoc::*;
-use std::cmp::max;
 use regex::Regex;
+use std::cmp::max;
+use util::aoc::*;
 
 lazy_static! {
     static ref RE: Regex = Regex::new("#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)").unwrap();
@@ -26,7 +26,7 @@ impl Claim {
                 from_top: captures[3].parse::<usize>()?,
                 width: captures[4].parse::<usize>()?,
                 height: captures[5].parse::<usize>()?,
-            })
+            });
         }
 
         Err(format_err!("Couldn't parse claim: {}", claim_str))
@@ -41,9 +41,12 @@ impl Claim {
     }
 }
 
-fn main() ->  Result<(), Box<std::error::Error>> {
+fn main() -> Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(3)?;
-    let claims: Vec<Claim> = lines.iter().map(Claim::parse).collect::<Result<Vec<_>, _>>()?;
+    let claims: Vec<Claim> = lines
+        .iter()
+        .map(Claim::parse)
+        .collect::<Result<Vec<_>, _>>()?;
     let (size, grid) = time("Grid", || build_grid(&claims));
 
     result("Part 1", || part1(size, &grid));
@@ -74,17 +77,17 @@ fn part2(grid: &Vec<Vec<u32>>, claims: &Vec<Claim>) -> Option<String> {
             for x in claim.from_top..claim.abs_height() {
                 if grid[y][x] > 1 {
                     overlapping = true;
-                    break
+                    break;
                 }
             }
 
             if overlapping {
-                break
+                break;
             }
         }
 
         if !overlapping {
-            return Some(claim.id.to_string())
+            return Some(claim.id.to_string());
         }
     }
 

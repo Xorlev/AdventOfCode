@@ -1,7 +1,7 @@
-use util::aoc::*;
 use std::collections::hash_set::HashSet;
+use util::aoc::*;
 
-fn main() ->  Result<(), Box<std::error::Error>> {
+fn main() -> Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(1)?;
 
     let frequency_deltas: Vec<i32> = lines

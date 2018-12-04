@@ -1,7 +1,7 @@
-use util::aoc::*;
 use std::collections::hash_map::HashMap;
+use util::aoc::*;
 
-fn main() ->  Result<(), Box<std::error::Error>> {
+fn main() -> Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(2)?;
 
     result("Part 1", || part1(&lines));
@@ -14,7 +14,7 @@ fn part1(lines: &Vec<String>) -> u32 {
     let counts = lines
         .iter()
         .map(checksum)
-        .fold((0, 0), |acc, c| (acc.0+c.0, acc.1+c.1));
+        .fold((0, 0), |acc, c| (acc.0 + c.0, acc.1 + c.1));
 
     counts.0 * counts.1
 }
@@ -25,7 +25,7 @@ fn checksum(box_id: &String) -> (u32, u32) {
     for ch in box_id.chars() {
         let counter = frequency_map.entry(ch).or_insert(0);
         *counter += 1;
-    };
+    }
 
     let mut occurs_twice = 0;
     let mut occurs_thrice = 0;
@@ -48,7 +48,7 @@ fn part2(lines: &Vec<String>) -> Option<String> {
                 let edit_str = edited_string(l1, l2);
 
                 if edit_str.is_some() {
-                    return edit_str
+                    return edit_str;
                 }
             }
         }
@@ -74,7 +74,7 @@ fn edited_string(str1: &String, str2: &String) -> Option<String> {
             }
             (Some(_), None) => return None,
             (None, Some(_)) => return None,
-            (None, None) => break
+            (None, None) => break,
         }
     }
 
