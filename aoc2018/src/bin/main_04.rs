@@ -6,10 +6,10 @@ use regex::Regex;
 use std::collections::hash_map::HashMap;
 use util::aoc::*;
 
-#[derive(Debug)]
-struct Event {
-    timestamp: NaiveDateTime,
-    event_type: EventType,
+lazy_static! {
+    static ref RE_SHIFT: Regex = Regex::new("\\[(.+)\\] Guard #(\\d+) begins shift").unwrap();
+    static ref RE_WAKES: Regex = Regex::new("\\[(.+)\\] wakes up").unwrap();
+    static ref RE_SLEEP: Regex = Regex::new("\\[(.+)\\] falls asleep").unwrap();
 }
 
 #[derive(Debug)]
@@ -19,10 +19,10 @@ enum EventType {
     WakeUp,
 }
 
-lazy_static! {
-    static ref RE_SHIFT: Regex = Regex::new("\\[(.+)\\] Guard #(\\d+) begins shift").unwrap();
-    static ref RE_WAKES: Regex = Regex::new("\\[(.+)\\] wakes up").unwrap();
-    static ref RE_SLEEP: Regex = Regex::new("\\[(.+)\\] falls asleep").unwrap();
+#[derive(Debug)]
+struct Event {
+    timestamp: NaiveDateTime,
+    event_type: EventType,
 }
 
 impl Event {
