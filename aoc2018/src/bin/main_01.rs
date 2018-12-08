@@ -15,11 +15,11 @@ fn main() -> Result<(), Box<std::error::Error>> {
     Ok(())
 }
 
-fn part1(frequency_deltas: &Vec<i32>) -> i32 {
+fn part1(frequency_deltas: &[i32]) -> i32 {
     frequency_deltas.iter().sum()
 }
 
-fn part2(frequency_deltas: &Vec<i32>) -> i32 {
+fn part2(frequency_deltas: &[i32]) -> i32 {
     let mut frequencies_seen: HashSet<i32> = HashSet::new();
     let mut frequency = 0;
     for delta in frequency_deltas.iter().cycle() {

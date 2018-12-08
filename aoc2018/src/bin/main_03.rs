@@ -56,7 +56,7 @@ fn main() -> Result<(), Box<std::error::Error>> {
 }
 
 // How many square inches of fabric are within two or more claims?
-fn part1(size: (usize, usize), grid: &Vec<Vec<u32>>) -> u32 {
+fn part1(size: (usize, usize), grid: &[Vec<u32>]) -> u32 {
     let mut overlapping_squares = 0;
     for y in 0..size.1 {
         for x in 0..size.0 {
@@ -70,7 +70,7 @@ fn part1(size: (usize, usize), grid: &Vec<Vec<u32>>) -> u32 {
 }
 
 // How many square inches of fabric are within two or more claims?
-fn part2(grid: &Vec<Vec<u32>>, claims: &Vec<Claim>) -> Option<String> {
+fn part2(grid: &[Vec<u32>], claims: &[Claim]) -> Option<String> {
     for claim in claims {
         let mut overlapping = false;
         for y in claim.from_left..claim.abs_width() {
@@ -94,7 +94,7 @@ fn part2(grid: &Vec<Vec<u32>>, claims: &Vec<Claim>) -> Option<String> {
     None
 }
 
-fn build_grid(claims: &Vec<Claim>) -> ((usize, usize), Vec<Vec<u32>>) {
+fn build_grid(claims: &[Claim]) -> ((usize, usize), Vec<Vec<u32>>) {
     // Find the size of the grid
     let size = claims
         .iter()

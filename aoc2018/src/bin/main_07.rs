@@ -1,5 +1,4 @@
 use failure::*;
-use itertools::Itertools;
 use lazy_static::*;
 use regex::Regex;
 use std::cmp::Ordering;

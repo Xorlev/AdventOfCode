@@ -30,7 +30,9 @@ fn part1(header: &Node) -> u32 {
 }
 
 fn part2(header: &Node) -> u32 {
-    if header.child_nodes.len() > 0 {
+    if header.child_nodes.is_empty() {
+        header.metadata_entry.iter().sum::<u32>()
+    } else {
         header
             .metadata_entry
             .iter()
@@ -42,8 +44,6 @@ fn part2(header: &Node) -> u32 {
                     .unwrap_or(0)
             })
             .sum()
-    } else {
-        header.metadata_entry.iter().sum::<u32>()
     }
 }
 
@@ -60,9 +60,9 @@ A----------------------------------
     B----------- C-----------
                      D-----
 */
-fn parse(line: &String) -> Result<Node, Error> {
+fn parse(line: &str) -> Result<Node, Error> {
     let pieces: Vec<u32> = line
-        .split(" ")
+        .split(' ')
         .map(|p| p.parse::<u32>())
         .collect::<Result<Vec<_>, std::num::ParseIntError>>()?;
 
@@ -70,8 +70,8 @@ fn parse(line: &String) -> Result<Node, Error> {
 }
 
 fn parse_header(chunk: &[u32]) -> Result<(Node, usize), Error> {
-    let num_child_nodes = *chunk.get(0).ok_or(format_err!("Bad chunk"))?;
-    let num_metadata_nodes = *chunk.get(1).ok_or(format_err!("Bad chunk"))?;
+    let num_child_nodes = *chunk.get(0).ok_or_else(|| format_err!("Bad chunk"))?;
+    let num_metadata_nodes = *chunk.get(1).ok_or_else(|| format_err!("Bad chunk"))?;
 
     let mut node = Node::default();
     let mut position = 2;
