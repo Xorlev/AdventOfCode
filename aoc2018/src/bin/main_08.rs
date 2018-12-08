@@ -25,7 +25,7 @@ fn part1(header: &Node) -> u32 {
         + header
             .child_nodes
             .iter()
-            .map(|node| part1(node))
+            .map(part1)
             .sum::<u32>()
 }
 
