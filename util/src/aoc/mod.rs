@@ -3,6 +3,33 @@ use std::time::Instant;
 
 pub mod astar;
 pub mod input;
+pub mod top_k;
+
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+pub struct Point {
+    pub x: i32,
+    pub y: i32,
+}
+
+impl Point {
+    pub fn new(x: i32, y: i32) -> Point {
+        Point { x, y }
+    }
+
+    pub fn neighbors4(&self) -> Vec<Point> {
+        vec![
+            Point::new(self.x + 1, self.y),
+            Point::new(self.x - 1, self.y),
+            Point::new(self.x, self.y + 1),
+            Point::new(self.x, self.y - 1),
+        ]
+    }
+
+    #[inline]
+    pub fn manhattan_distance(&self, other: &Point) -> i32 {
+        (self.x - other.x).abs() + (self.y - other.y).abs()
+    }
+}
 
 pub fn time<S, F, T>(label: S, function: F) -> T
     where F: Fn() -> T,
