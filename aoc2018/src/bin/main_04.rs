@@ -113,10 +113,12 @@ impl SolutionState {
 
 fn main() -> Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(4)?;
-    let events: Vec<Event> = time("Parse events", || lines
-        .iter()
-        .map(Event::parse)
-        .collect::<Result<Vec<_>, _>>())?;
+    let events: Vec<Event> = time("Parse events", || {
+        lines
+            .iter()
+            .map(Event::parse)
+            .collect::<Result<Vec<_>, _>>()
+    })?;
     let events = events
         .into_iter()
         .sorted_by_key(|e| e.timestamp.timestamp());
@@ -139,7 +141,10 @@ fn part1(state: &SolutionState) -> u32 {
         .iter()
         // Take guard -> (minute -> frequency) and make it (guard, minutes).
         .map(|histogram| {
-            (histogram.0, histogram.1.iter().map(|bucket| bucket.1).sum::<u32>())
+            (
+                histogram.0,
+                histogram.1.iter().map(|bucket| bucket.1).sum::<u32>(),
+            )
         })
         .max_by_key(|v| v.1)
         .unwrap()
