@@ -70,7 +70,7 @@ fn part1(reference_points: &Vec<Point>) -> u32 {
             }
         }
     }
-    for x in [x_min,x_max].iter() {
+    for x in [x_min, x_max].iter() {
         for y in y_min..y_max {
             // Find closest point
             let point = Point::new(*x, y);
@@ -106,10 +106,13 @@ fn part2(reference_points: &Vec<Point>) -> u32 {
             // Add up the distances.
             let summed_distance: i32 = reference_points
                 .iter()
-                .map(|p| ComparablePoint {
-                    point: &point,
-                    reference: p,
-                }.manhattan_distance())
+                .map(|p| {
+                    ComparablePoint {
+                        point: &point,
+                        reference: p,
+                    }
+                    .manhattan_distance()
+                })
                 .sum();
 
             if summed_distance < 10_000 {
