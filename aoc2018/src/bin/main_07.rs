@@ -13,11 +13,13 @@ lazy_static! {
         Regex::new("Step (.+) must be finished before step (.+) can begin.").unwrap();
 }
 
+type Step = char;
+
 fn main() -> Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(7)?;
 
-    let mut dependency_graph: HashMap<char, BTreeSet<char>> = HashMap::new();
-    let mut all_nodes: BTreeSet<char> = BTreeSet::new();
+    let mut dependency_graph: HashMap<Step, BTreeSet<Step>> = HashMap::new();
+    let mut all_nodes: BTreeSet<Step> = BTreeSet::new();
     for edge in lines.iter().map(parse) {
         let edge = edge?;
 
@@ -34,20 +36,26 @@ fn main() -> Result<(), Box<std::error::Error>> {
     Ok(())
 }
 
-fn parse(line: &String) -> Result<(char, char), Error> {
+fn parse(line: &String) -> Result<(Step, Step), Error> {
     if let Some(captures) = RE_STEP.captures(line.as_str()) {
         Ok((
-            captures[1].chars().next().ok_or(format_err!("Missing capture."))?,
-            captures[2].chars().next().ok_or(format_err!("Missing capture."))?,
+            captures[1]
+                .chars()
+                .next()
+                .ok_or(format_err!("Missing capture."))?,
+            captures[2]
+                .chars()
+                .next()
+                .ok_or(format_err!("Missing capture."))?,
         ))
     } else {
         Err(format_err!("Failed to parse line: {}", line))
     }
 }
 
-fn part1(all_nodes: &BTreeSet<char>, dependency_graph: &HashMap<char, BTreeSet<char>>) -> String {
-    let mut stack: Vec<char> = Vec::new();
-    let mut complete: HashSet<char> = HashSet::new();
+fn part1(all_nodes: &BTreeSet<Step>, dependency_graph: &HashMap<Step, BTreeSet<Step>>) -> String {
+    let mut stack: Vec<Step> = Vec::new();
+    let mut complete: HashSet<Step> = HashSet::new();
 
     loop {
         if all_nodes.len() == complete.len() {
@@ -79,9 +87,9 @@ fn part1(all_nodes: &BTreeSet<char>, dependency_graph: &HashMap<char, BTreeSet<c
     stack.iter().collect()
 }
 
-fn part2(all_nodes: &BTreeSet<char>, dependency_graph: &HashMap<char, BTreeSet<char>>) -> u32 {
-    let mut stack: Vec<char> = Vec::new();
-    let mut complete: HashSet<char> = HashSet::new();
+fn part2(all_nodes: &BTreeSet<Step>, dependency_graph: &HashMap<Step, BTreeSet<Step>>) -> u32 {
+    let mut stack: Vec<Step> = Vec::new();
+    let mut complete: HashSet<Step> = HashSet::new();
     let mut worker_pool = WorkerPool::new(5);
 
     loop {
@@ -122,11 +130,11 @@ fn part2(all_nodes: &BTreeSet<char>, dependency_graph: &HashMap<char, BTreeSet<c
 
 #[derive(Debug)]
 struct Task {
-    step: char,
+    step: Step,
 }
 
 impl Task {
-    fn new(step: char) -> Task {
+    fn new(step: Step) -> Task {
         Task { step }
     }
 
@@ -142,7 +150,7 @@ impl Task {
 struct WorkerPool {
     available: Vec<Worker>,
     busy: HashSet<Worker>,
-    in_progress: HashSet<char>,
+    in_progress: HashSet<Step>,
     time: u32,
 }
 
@@ -154,7 +162,7 @@ impl WorkerPool {
         }
     }
 
-    fn start(&mut self, task: char) -> bool {
+    fn start(&mut self, task: Step) -> bool {
         if let Some(mut worker) = self.available.pop() {
             self.in_progress.insert(task);
             worker.run(self.time, Task::new(task));
@@ -165,12 +173,12 @@ impl WorkerPool {
         }
     }
 
-    fn running(&self, task: &char) -> bool {
+    fn running(&self, task: &Step) -> bool {
         self.in_progress.contains(task)
     }
 
     // Returns tasks completed on this step.
-    fn step(&mut self) -> Vec<char> {
+    fn step(&mut self) -> Vec<Step> {
         self.time += 1;
 
         // There's probably a better way to deal with this.
@@ -198,24 +206,39 @@ impl WorkerPool {
     }
 }
 
+#[derive(Debug, Eq, PartialEq, Hash)]
+enum CompletionTime {
+    Idle,
+    CompleteAt(u32),
+}
+
+impl Default for CompletionTime {
+    fn default() -> Self {
+        CompletionTime::Idle
+    }
+}
+
 #[derive(Debug, Eq, PartialEq, Hash, Default)]
 struct Worker {
-    task: Option<char>,
-    completion_time: u32,
+    task: Option<Step>,
+    completion_time: CompletionTime,
 }
 
 impl Worker {
     fn run(&mut self, time: u32, task: Task) {
         self.task = Some(task.step);
-        self.completion_time = time + task.execution_time();
+        self.completion_time = CompletionTime::CompleteAt(time + task.execution_time());
     }
 
     fn complete(&self, time: u32) -> bool {
-        self.completion_time == time
+        match self.completion_time {
+            CompletionTime::Idle => false,
+            CompletionTime::CompleteAt(completion_time) => completion_time == time,
+        }
     }
 
     fn reset(&mut self) {
         self.task = None;
-        self.completion_time = 0;
+        self.completion_time = CompletionTime::Idle;
     }
 }
