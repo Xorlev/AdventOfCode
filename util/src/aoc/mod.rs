@@ -1,12 +1,13 @@
 use std::fmt::{Debug, Display};
 use std::time::Instant;
+use std::ops;
 
 pub mod astar;
 pub mod input;
 pub mod linked_list;
 pub mod top_k;
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
@@ -24,6 +25,13 @@ impl Point {
             Point::new(self.x, self.y + 1),
             Point::new(self.x, self.y - 1),
         ]
+    }
+
+    pub fn add(&self, rhs: &Point) -> Point {
+        Point {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
     }
 
     #[inline]
