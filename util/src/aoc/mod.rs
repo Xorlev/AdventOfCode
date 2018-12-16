@@ -3,6 +3,7 @@ use std::time::Instant;
 
 pub mod astar;
 pub mod input;
+pub mod linked_list;
 pub mod top_k;
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
