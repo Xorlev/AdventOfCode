@@ -27,6 +27,33 @@ impl Point {
         ]
     }
 
+    pub fn neighbors8(&self) -> Vec<Point> {
+        vec![
+            Point::new(self.x + 1, self.y),
+            Point::new(self.x - 1, self.y),
+            Point::new(self.x, self.y + 1),
+            Point::new(self.x, self.y - 1),
+            Point::new(self.x + 1, self.y - 1),
+            Point::new(self.x - 1, self.y + 1),
+            Point::new(self.x + 1, self.y + 1),
+            Point::new(self.x - 1, self.y - 1),
+        ]
+    }
+
+    /// Creates a square of points, using self as the top-left point.
+    pub fn square(&self, side_length: usize) -> Vec<Point> {
+        let mut points = Vec::new();
+
+        for x in 0..side_length {
+            for y in 0..side_length {
+                points.push(Point::new(x as i32, y as i32).add(self));
+            }
+
+        }
+
+        points
+    }
+
     pub fn add(&self, rhs: &Point) -> Point {
         Point {
             x: self.x + rhs.x,
