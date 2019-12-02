@@ -1,14 +1,14 @@
 use failure::*;
-use util::aoc::*;
-use util::aoc::linked_list::*;
 use std::collections::HashMap;
+use util::aoc::linked_list::*;
+use util::aoc::*;
 
 type Marble = u32;
 type Elf = u32;
 
 fn main() -> Result<(), Box<std::error::Error>> {
     result("Part 1", || part1(459, 72103));
-    result("Part 2", || part1(459, 72103*100));
+    result("Part 2", || part1(459, 72103 * 100));
 
     Ok(())
 }
@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<std::error::Error>> {
 fn part1(players: u32, last_marble: Marble) -> u32 {
     let mut state = GameState::new(players, last_marble);
     for i in 0..last_marble {
-        let player = i%players + 1;
+        let player = i % players + 1;
         state.play(player);
     }
 
@@ -28,7 +28,7 @@ struct GameState {
     current_marble: Marble,
     current_marble_idx: Idx,
     marbles: UsefulLinkedList<Marble>,
-    scores: HashMap<Elf, u32>
+    scores: HashMap<Elf, u32>,
 }
 
 impl GameState {
@@ -83,10 +83,10 @@ impl GameState {
 
             self.current_marble_idx = next_marble_idx;
         } else {
-            self.current_marble_idx =
-                self.marbles.insert_after(self.next_index(), self.current_marble);
+            self.current_marble_idx = self
+                .marbles
+                .insert_after(self.next_index(), self.current_marble);
         }
-
 
         self.current_marble += 1;
     }

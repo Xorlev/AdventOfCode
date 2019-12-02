@@ -42,7 +42,7 @@ fn part1(polymer: &String) -> usize {
         let c2 = polymer[p2];
 
         // If it's not aa, but it is lower(a) == lower(A), edit the polymer.
-        if c1 != c2 && c1.to_ascii_lowercase() == c2.to_ascii_lowercase() {
+        if c1 != c2 && c1.to_lowercase() == c2.to_ascii_lowercase() {
             polymer[p1] = '?';
             polymer[p2] = '?';
 

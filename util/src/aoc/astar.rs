@@ -52,8 +52,8 @@ impl <T: Eq> PartialOrd for ValueWithCost<T> {
     }
 }
 
-pub fn search<'a, T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) ->
-        Vec<T>>(start: &'a T, h_fn: HF, move_fn: MF) -> AStarResult<T> {
+pub fn search<T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) ->
+Vec<T>>(start: &T, h_fn: HF, move_fn: MF) -> AStarResult<T> {
     let mut frontier: BinaryHeap<ValueWithCost<T>> = BinaryHeap::new();
     frontier.push(ValueWithCost {
         value: start.to_owned(),
@@ -64,7 +64,7 @@ pub fn search<'a, T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) -
     path_cost.insert(start.to_owned(), 0);
 
 
-    while let Some(ValueWithCost { value, cost }) = frontier.pop() {
+    while let Some(ValueWithCost { value, cost: _ }) = frontier.pop() {
         if h_fn(&value) == 0 {
             return AStarResult::from_path(value, previous);
         }

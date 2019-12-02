@@ -21,12 +21,7 @@ fn main() -> Result<(), Box<std::error::Error>> {
 }
 
 fn part1(header: &Node) -> u32 {
-    header.metadata_entry.iter().sum::<u32>()
-        + header
-            .child_nodes
-            .iter()
-            .map(part1)
-            .sum::<u32>()
+    header.metadata_entry.iter().sum::<u32>() + header.child_nodes.iter().map(part1).sum::<u32>()
 }
 
 fn part2(header: &Node) -> u32 {
