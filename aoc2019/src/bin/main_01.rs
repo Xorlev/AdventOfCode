@@ -1,6 +1,6 @@
 use std::collections::hash_set::HashSet;
-use util::aoc::*;
 use std::str::FromStr;
+use util::aoc::*;
 
 fn main() -> Result<(), Box<std::error::Error>> {
     let lines: Vec<String> = input::read(1)?;
@@ -13,13 +13,15 @@ fn main() -> Result<(), Box<std::error::Error>> {
 }
 
 fn part1(module_masses: &[i32]) -> i32 {
-    module_masses.iter()
+    module_masses
+        .iter()
         .map(|mass| calculate_fuel(*mass).unwrap_or(0))
         .sum()
 }
 
 fn part2(module_masses: &[i32]) -> i32 {
-    module_masses.iter()
+    module_masses
+        .iter()
         .map(|mass| calculate_fuel_until_zero(*mass))
         .sum()
 }
@@ -42,16 +44,6 @@ fn calculate_fuel_until_zero(mass: i32) -> i32 {
         last_fuel_mass = fuel_mass;
     }
     total_fuel_mass
-}
-
-trait ParseAs {
-    fn parse<F: FromStr>(&self) -> Result<Vec<F>, F::Err>;
-}
-
-impl ParseAs for Vec<String> {
-    fn parse<F: FromStr>(&self) -> Result<Vec<F>, <F as FromStr>::Err> {
-        self.iter().map(|val| FromStr::from_str(val)).collect()
-    }
 }
 
 #[cfg(test)]

@@ -1,6 +1,7 @@
 use std::fmt::{Debug, Display};
 use std::time::Instant;
 use std::ops;
+use std::str::FromStr;
 
 pub mod astar;
 pub mod input;
@@ -85,4 +86,14 @@ pub fn result<S, F, T>(label: S, function: F) -> T
     let result = time(label, function);
     println!(" => {:?}", result);
     result
+}
+
+pub trait ParseAs {
+    fn parse<F: FromStr>(&self) -> Result<Vec<F>, F::Err>;
+}
+
+impl ParseAs for Vec<String> {
+    fn parse<F: FromStr>(&self) -> Result<Vec<F>, <F as FromStr>::Err> {
+        self.iter().map(|val| FromStr::from_str(val)).collect()
+    }
 }
