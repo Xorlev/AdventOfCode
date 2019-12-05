@@ -22,7 +22,7 @@ struct Light {
 
 impl Light {
     fn step(&mut self) {
-        self.position = self.position.add(&self.velocity);
+        self.position = self.position + self.velocity;
     }
 }
 

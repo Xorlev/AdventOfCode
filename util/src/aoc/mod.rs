@@ -2,6 +2,7 @@ use std::fmt::{Debug, Display};
 use std::time::Instant;
 use std::ops;
 use std::str::FromStr;
+use std::ops::{Add, Sub};
 
 pub mod astar;
 pub mod input;
@@ -15,8 +16,12 @@ pub struct Point {
 }
 
 impl Point {
-    pub fn new(x: i32, y: i32) -> Point {
+    pub const fn new(x: i32, y: i32) -> Point {
         Point { x, y }
+    }
+
+    pub const fn zero() -> Point {
+        Point::new(0, 0)
     }
 
     pub fn neighbors4(&self) -> Vec<Point> {
@@ -47,7 +52,7 @@ impl Point {
 
         for x in 0..side_length {
             for y in 0..side_length {
-                points.push(Point::new(x as i32, y as i32).add(self));
+                points.push(Point::new(x as i32, y as i32) + *self);
             }
 
         }
@@ -55,16 +60,31 @@ impl Point {
         points
     }
 
-    pub fn add(&self, rhs: &Point) -> Point {
+    #[inline]
+    pub fn manhattan_distance(&self, other: &Point) -> i32 {
+        (self.x - other.x).abs() + (self.y - other.y).abs()
+    }
+}
+
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, rhs: Self) -> Self::Output {
         Point {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
         }
     }
+}
 
-    #[inline]
-    pub fn manhattan_distance(&self, other: &Point) -> i32 {
-        (self.x - other.x).abs() + (self.y - other.y).abs()
+impl Sub for Point {
+    type Output = Point;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Point {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
     }
 }
 
