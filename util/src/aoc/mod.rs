@@ -112,8 +112,8 @@ pub trait ParseAs {
     fn parse<F: FromStr>(&self) -> Result<Vec<F>, F::Err>;
 }
 
-impl ParseAs for Vec<String> {
+impl<T: AsRef<str>> ParseAs for Vec<T> {
     fn parse<F: FromStr>(&self) -> Result<Vec<F>, <F as FromStr>::Err> {
-        self.iter().map(|val| FromStr::from_str(val)).collect()
+        self.iter().map(|val| FromStr::from_str(val.as_ref())).collect()
     }
 }
