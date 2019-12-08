@@ -3,8 +3,8 @@ use itertools::Itertools;
 use std::collections::hash_set::HashSet;
 use std::collections::HashMap;
 use std::str::FromStr;
-use util::aoc::*;
 use util::aoc::digits::Digits;
+use util::aoc::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ranges: Vec<u32> = input::read(4)?[0]

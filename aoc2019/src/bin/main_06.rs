@@ -1,14 +1,14 @@
+use aoc2019::intcode::*;
 use failure::{bail, format_err, Error};
 use itertools::Itertools;
+use std::borrow::Borrow;
 use std::collections::hash_set::HashSet;
+use std::collections::HashMap;
 use std::str::FromStr;
 use util::aoc::*;
-use aoc2019::intcode::*;
-use std::collections::HashMap;
-use std::borrow::Borrow;
 
 type Object = String;
-type Edge = (Object,Object);
+type Edge = (Object, Object);
 
 const SAN: &str = "SAN";
 const YOU: &str = "YOU";
@@ -30,7 +30,8 @@ fn part1(edges: Vec<Edge>) -> usize {
     let (objects, parent_graph) = build_graph(edges);
 
     // Count all paths.
-    return objects.iter()
+    return objects
+        .iter()
         .flat_map(|object| parent_graph.traverse(object))
         .count();
 }
@@ -40,27 +41,30 @@ fn part2(edges: Vec<Edge>) -> usize {
 
     // Find the common parent of SAN and YOU.
     let mut san_chain: Vec<Object> = parent_graph.traverse(&SAN).collect();
-    return parent_graph.traverse(&YOU)
+    return parent_graph
+        .traverse(&YOU)
         .enumerate()
         .find_map(|(you_length, object)| {
-            san_chain.iter().position(|o| *o == object).map(|san_length| you_length + san_length)
-        }).unwrap_or(0);
+            san_chain
+                .iter()
+                .position(|o| *o == object)
+                .map(|san_length| you_length + san_length)
+        })
+        .unwrap_or(0);
 }
 
 struct ParentGraph {
-    object_to_parent: HashMap<Object, Object>
+    object_to_parent: HashMap<Object, Object>,
 }
 
 impl ParentGraph {
     fn new(object_to_parent: HashMap<Object, Object>) -> ParentGraph {
-        ParentGraph {
-            object_to_parent
-        }
+        ParentGraph { object_to_parent }
     }
     fn traverse(&self, start_at: &str) -> ParentGraphIterator {
         ParentGraphIterator {
             current_object: start_at.to_string(),
-            parent_graph: self
+            parent_graph: self,
         }
     }
 }
@@ -78,14 +82,15 @@ impl<'a> Iterator for ParentGraphIterator<'a> {
             Some(parent) => {
                 self.current_object = parent.clone();
                 Some(self.current_object.clone())
-            },
-            None => None
+            }
+            None => None,
         }
     }
 }
 
 fn parse(lines: Vec<String>) -> Vec<Edge> {
-    lines.iter()
+    lines
+        .iter()
         .map(|l| l.split(")").collect::<Vec<_>>())
         .map(|s| (s[0].to_string(), s[1].to_string()))
         .collect()
