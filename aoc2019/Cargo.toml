@@ -9,5 +9,6 @@ chrono = "0.4"
 failure = "0.1"
 itertools = "0.7"
 lazy_static = "1.2"
+permutohedron = "0.2.4"
 util = { path = "../util" }
 regex = "1.1"

@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn part1(memory: Vec<i32>) -> Result<Option<i32>, Error> {
+fn part1(memory: Vec<i32>) -> Result<IOResult, Error> {
     Intcode::init(memory.clone()).execute()
 }
 
@@ -29,9 +29,10 @@ fn part2(memory: Vec<i32>) -> Result<i32, Error> {
             new_memory[1] = noun;
             new_memory[2] = verb;
 
-            let result = Intcode::init(new_memory).execute()?.unwrap_or(0);
-            if result == 19690720 {
-                return Ok(100 * noun + verb);
+            if let IOResult::Halt(result) = Intcode::init(new_memory).execute()? {
+                if result == 19690720 {
+                    return Ok(100 * noun + verb);
+                }
             }
         }
     }

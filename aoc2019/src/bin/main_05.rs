@@ -15,17 +15,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!(
         "Output: {:?}",
-        Intcode::init_with_io(&ask_for_input, memory).execute()
+        Intcode::init_with_io(InputIterator {}, memory).execute()
     );
     Ok(())
 }
 
-fn ask_for_input() -> i32 {
-    let mut value = String::new();
-    print!("Input: ");
-    std::io::stdout().f5lush();
-    std::io::stdin()
-        .read_line(&mut value)
-        .expect("error: unable to read user input");
-    value.trim().parse().unwrap()
+struct InputIterator {}
+
+impl Iterator for InputIterator {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut value = String::new();
+        print!("Input: ");
+        std::io::stdout().flush().unwrap();
+        std::io::stdin()
+            .read_line(&mut value)
+            .expect("error: unable to read user input");
+        value.trim().parse().ok()
+    }
 }

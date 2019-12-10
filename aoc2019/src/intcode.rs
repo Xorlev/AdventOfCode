@@ -1,6 +1,6 @@
 use crate::intcode::Parameter::{Immediate, Position};
-use failure::{bail, format_err, Error};
-use std::io::Write;
+use failure::{format_err, Error};
+use std::borrow::Cow;
 use util::aoc::digits::Digits;
 
 const ADD: i32 = 1;
@@ -13,88 +13,86 @@ const LESS_THAN: i32 = 7;
 const EQUALS: i32 = 8;
 const HALT: i32 = 99;
 
-pub struct Intcode<'a> {
-    input_fn: &'a dyn Fn() -> i32,
-    legacy_output_behavior: bool,
-    memory: Vec<i32>,
-    output: Option<i32>,
+#[derive(Clone, Debug)]
+pub enum IOResult {
+    InputRequired,
+    Output(i32),
+    Halt(i32),
 }
 
-impl<'a> Intcode<'a> {
-    pub fn init(memory: Vec<i32>) -> Intcode<'a> {
+pub struct Intcode {
+    legacy_output_behavior: bool,
+    memory: Vec<i32>,
+    pc: usize,
+}
+
+impl Intcode {
+    pub fn init(memory: Vec<i32>) -> Intcode {
         Intcode {
             legacy_output_behavior: true,
-            input_fn: &|| 0,
             memory,
-            output: None,
+            pc: 0,
         }
     }
 
-    pub fn init_with_io(input_fn: &'a dyn Fn() -> i32, memory: Vec<i32>) -> Intcode<'a> {
-        Intcode {
-            legacy_output_behavior: false,
-            input_fn,
-            memory,
-            output: None,
-        }
+    pub fn execute(&mut self) -> Result<IOResult, Error> {
+        self.resume(None)
     }
 
-    pub fn execute(&mut self) -> Result<Option<i32>, Error> {
-        let mut pc = 0;
+    pub fn resume(&mut self, mut resume_input: Option<i32>) -> Result<IOResult, Error> {
         loop {
-            match Operation::parse_op(&self.memory[pc..])? {
+            let operation = Operation::parse_op(&self.memory[self.pc..])?;
+            match operation {
                 Operation::Add(left, right, output) => {
                     self.memory[output as usize] = self.m(left) + self.m(right);
-                    pc += 4;
+                    self.pc += 4;
                 }
                 Operation::Mul(left, right, output) => {
                     self.memory[output as usize] = self.m(left) * self.m(right);
-                    pc += 4;
+                    self.pc += 4;
                 }
-                Operation::Input(input) => {
-                    self.memory[input as usize] = (self.input_fn)();
-                    pc += 2;
-                }
+                Operation::Input(input) => match resume_input.take() {
+                    Some(resume_input) => {
+                        self.memory[input as usize] = resume_input;
+                        self.pc += 2;
+                    }
+                    None => {
+                        return Ok(IOResult::InputRequired);
+                    }
+                },
                 Operation::Output(output) => {
-                    pc += 2;
-                    self.output = Some(self.m(output));
+                    self.pc += 2;
+                    return Ok(IOResult::Output(self.m(output)));
                 }
                 Operation::JumpIfTrue(left, right) => {
                     if self.m(left) != 0 {
-                        pc = self.m(right) as usize;
+                        self.pc = self.m(right) as usize;
                     } else {
-                        pc += 3;
+                        self.pc += 3;
                     }
                 }
                 Operation::JumpIfFalse(left, right) => {
                     if self.m(left) == 0 {
-                        pc = self.m(right) as usize;
+                        self.pc = self.m(right) as usize;
                     } else {
-                        pc += 3;
+                        self.pc += 3;
                     }
                 }
                 Operation::LessThan(left, right, output) => {
                     self.memory[output as usize] = if self.m(left) < self.m(right) { 1 } else { 0 };
 
-                    pc += 4;
+                    self.pc += 4;
                 }
                 Operation::Equals(left, right, output) => {
                     self.memory[output as usize] =
                         if self.m(left) == self.m(right) { 1 } else { 0 };
 
-                    pc += 4;
+                    self.pc += 4;
                 }
                 Operation::Halt => {
-                    pc += 1;
-                    break;
+                    return Ok(IOResult::Halt(self.memory[0]));
                 }
             }
-        }
-
-        if self.legacy_output_behavior {
-            Ok(Some(self.memory[0]))
-        } else {
-            Ok(self.output)
         }
     }
 
@@ -106,6 +104,7 @@ impl<'a> Intcode<'a> {
     }
 }
 
+#[derive(Debug)]
 enum Parameter {
     Position(i32),
     Immediate(i32),
@@ -121,6 +120,7 @@ impl Parameter {
     }
 }
 
+#[derive(Debug)]
 enum Operation {
     Add(Parameter, Parameter, i32),
     Mul(Parameter, Parameter, i32),
