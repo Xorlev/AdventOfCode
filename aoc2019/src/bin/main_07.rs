@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .first()
         .map(|f| f.split(",").map(|s| s.to_string()).collect())
         .unwrap_or(Vec::new());
-    let memory = lines.parse::<i32>()?;
+    let memory = lines.parse::<i64>()?;
 
     result("Part 1", || part1(memory.clone()));
     result("Part 2", || part2(memory.clone()));
@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn part1(memory: Vec<i32>) -> Result<i32, Error> {
+fn part1(memory: Vec<i64>) -> Result<i64, Error> {
     let mut phase_settings = vec![4, 3, 2, 1, 0];
     Heap::new(&mut phase_settings)
         .map(|phase_settings| {
@@ -35,7 +35,7 @@ fn part1(memory: Vec<i32>) -> Result<i32, Error> {
         .ok_or_else(|| format_err!("Failed to find max."))
 }
 
-fn part2(memory: Vec<i32>) -> i32 {
+fn part2(memory: Vec<i64>) -> i64 {
     let mut phase_settings = vec![9, 8, 7, 6, 5];
 
     Heap::new(&mut phase_settings)
@@ -44,7 +44,7 @@ fn part2(memory: Vec<i32>) -> i32 {
         .unwrap()
 }
 
-fn amplify(memory: Vec<i32>, phase_setting: i32, signal: i32) -> Result<i32, Error> {
+fn amplify(memory: Vec<i64>, phase_setting: i64, signal: i64) -> Result<i64, Error> {
     let mut amplifier = Amplifier::init(memory);
     let mut iter = vec![phase_setting, signal].into_iter();
 
@@ -58,7 +58,7 @@ fn amplify(memory: Vec<i32>, phase_setting: i32, signal: i32) -> Result<i32, Err
     }
 }
 
-fn amplify_with_feedback(memory: Vec<i32>, phase_settings: Vec<i32>) -> Result<i32, Error> {
+fn amplify_with_feedback(memory: Vec<i64>, phase_settings: Vec<i64>) -> Result<i64, Error> {
     let num_amplifiers = phase_settings.len();
     let mut amplifiers = phase_settings
         .into_iter()
@@ -86,15 +86,15 @@ fn amplify_with_feedback(memory: Vec<i32>, phase_settings: Vec<i32>) -> Result<i
 }
 
 struct Amplifier {
-    computer: Intcode,
+    computer: Computer,
     halted: bool,
     state: Option<IOResult>,
 }
 
 impl Amplifier {
-    fn init(memory: Vec<i32>) -> Self {
+    fn init(memory: Vec<i64>) -> Self {
         Amplifier {
-            computer: Intcode::init(memory),
+            computer: Computer::init(memory),
             halted: false,
             state: None,
         }
@@ -104,7 +104,7 @@ impl Amplifier {
         self.resume(None)
     }
 
-    fn resume(&mut self, input: Option<i32>) -> Result<IOResult, Error> {
+    fn resume(&mut self, input: Option<i64>) -> Result<IOResult, Error> {
         let result = self.computer.resume(input)?;
         if let IOResult::Halt(_) = result {
             self.halted = true;

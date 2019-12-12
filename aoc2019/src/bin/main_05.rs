@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!(
         "Output: {:?}",
-        Intcode::init_with_io(InputIterator {}, memory).execute()
+        Computer::init_with_io(InputIterator {}, memory).execute()
     );
     Ok(())
 }

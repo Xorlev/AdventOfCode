@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .first()
         .map(|f| f.split(",").map(|s| s.to_string()).collect())
         .unwrap_or(Vec::new());
-    let memory = lines.parse::<i32>()?;
+    let memory = lines.parse::<i64>()?;
 
     result("Part 1", || part1(memory.clone()).unwrap());
     result("Part 2", || part2(memory.clone()).unwrap());
@@ -18,18 +18,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn part1(memory: Vec<i32>) -> Result<IOResult, Error> {
-    Intcode::init(memory.clone()).execute()
+fn part1(memory: Vec<i64>) -> Result<IOResult, Error> {
+    Computer::init(memory.clone()).execute()
 }
 
-fn part2(memory: Vec<i32>) -> Result<i32, Error> {
+fn part2(memory: Vec<i64>) -> Result<i64, Error> {
     for noun in 0..1000 {
-        for verb in 0i32..(memory.len() - 1) as i32 {
+        for verb in 0i64..(memory.len() - 1) as i64 {
             let mut new_memory = memory.clone();
             new_memory[1] = noun;
             new_memory[2] = verb;
 
-            if let IOResult::Halt(result) = Intcode::init(new_memory).execute()? {
+            if let IOResult::Halt(result) = Computer::init(new_memory).execute()? {
                 if result == 19690720 {
                     return Ok(100 * noun + verb);
                 }
