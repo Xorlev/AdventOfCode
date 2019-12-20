@@ -65,6 +65,11 @@ impl Point {
     pub fn manhattan_distance(&self, other: &Point) -> i32 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
+
+    #[inline]
+    pub fn distance(&self, other: &Point) -> f32 {
+        (((other.x - self.x) as f32).powf(2.0) + ((self.y - other.y) as f32).powf(2.0)).sqrt()
+    }
 }
 
 impl Add for Point {
