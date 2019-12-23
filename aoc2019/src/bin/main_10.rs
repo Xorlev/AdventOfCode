@@ -143,7 +143,7 @@ fn vaporization_order(station: Point, all_asteroids: &[Point]) -> Option<Point> 
         }
 
         if total == 0 {
-            break
+            break;
         }
 
         index = (index + 1) % sorted_angles.len();

@@ -37,19 +37,13 @@ fn part2(memory: Vec<i64>) -> Result<usize, Error> {
     panels.insert(Point::zero(), Color::White);
     run(computer, &mut panels);
 
-    let x_mm = if let MinMaxResult::MinMax(x_min, x_max) = panels
-        .keys()
-        .map(|p| p.x)
-        .minmax() {
+    let x_mm = if let MinMaxResult::MinMax(x_min, x_max) = panels.keys().map(|p| p.x).minmax() {
         (x_min, x_max)
     } else {
         (0, 0)
     };
 
-    let y_mm = if let MinMaxResult::MinMax(y_min, y_max) = panels
-        .keys()
-        .map(|p| p.y)
-        .minmax() {
+    let y_mm = if let MinMaxResult::MinMax(y_min, y_max) = panels.keys().map(|p| p.y).minmax() {
         (y_min, y_max)
     } else {
         (0, 0)
@@ -148,5 +142,5 @@ impl Direction {
 #[derive(Clone, Copy, Debug)]
 enum Turn {
     Left,
-    Right
+    Right,
 }
