@@ -1,5 +1,5 @@
 use failure::{format_err, Error};
-use itertools::{Itertools, zip};
+use itertools::{zip, Itertools};
 use lazy_static::*;
 use num::integer::lcm;
 use regex::Regex;
@@ -57,13 +57,9 @@ fn part2(moons: Vec<Moon>) -> Result<usize, Error> {
     let combinations = (0..moons.len())
         .combinations(2)
         .collect::<Vec<Vec<usize>>>();
-    let mut stops = Vec::new();
+    let mut stops = [0; 3];
     for axis in 0..3 {
         let mut moons = moons.clone();
-        let reference = initial_state
-            .iter()
-            .map(|m| (m.position[axis], m.velocity[axis]))
-            .collect::<Vec<_>>();
         let mut steps = 0;
         loop {
             combinations.iter().for_each(|m| {
@@ -75,12 +71,11 @@ fn part2(moons: Vec<Moon>) -> Result<usize, Error> {
             moons.iter_mut().for_each(Moon::step);
             steps += 1;
 
-            if zip(&initial_state, &moons)
-                .all(|(m1, m2)| {
-                    m1.position[axis] == m2.position[axis] &&
-                    m1.velocity[axis] == m2.velocity[axis]
-                }) {
-                stops.push(steps);
+            // For each moon, check if we've returned to the initial state.
+            if zip(&initial_state, &moons).all(|(m1, m2)| {
+                m1.position[axis] == m2.position[axis] && m1.velocity[axis] == m2.velocity[axis]
+            }) {
+                stops[axis];
                 break;
             }
         }
