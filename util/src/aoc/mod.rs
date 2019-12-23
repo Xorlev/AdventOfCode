@@ -123,3 +123,26 @@ impl<T: AsRef<str>> ParseAs for Vec<T> {
         self.iter().map(|val| FromStr::from_str(val.as_ref())).collect()
     }
 }
+
+pub trait SliceExt {
+    type Item;
+
+    /// Returns two mutable references from a slice, so long as they're disjoint indices.
+    fn get_two_mut(&mut self, a: usize, b: usize) -> (&mut Self::Item, &mut Self::Item);
+}
+
+impl<T> SliceExt for [T] {
+    type Item = T;
+
+    fn get_two_mut(&mut self, a: usize, b: usize) -> (&mut Self::Item, &mut Self::Item) {
+        if a == b {
+            panic!("[T]::get_two_mut(): indices must be disjoint, given: (a={}, b={})", a, b);
+        }
+
+        unsafe {
+            let ar = &mut *(self.get_unchecked_mut(a) as *mut _);
+            let br = &mut *(self.get_unchecked_mut(b) as *mut _);
+            (ar, br)
+        }
+    }
+}
