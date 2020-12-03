@@ -14,17 +14,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn part1(expenses: &[i32]) -> i32 {
-    find_expense_pair_summing_to(expenses, 2020).map(|(a, b)| a * b).unwrap()
+    find_expense_pair_summing_to(expenses, 2020)
+        .map(|(a, b)| a * b)
+        .unwrap()
 }
 
 fn part2(expenses: &[i32]) -> i32 {
-    find_expense_triplet_summing_to(expenses, 2020).map(|(a, b, c)| a * b * c).unwrap()
+    find_expense_triplet_summing_to(expenses, 2020)
+        .map(|(a, b, c)| a * b * c)
+        .unwrap()
 }
 
 fn find_expense_pair_summing_to(expenses: &[i32], target: i32) -> Option<(i32, i32)> {
     let available_expenses: HashSet<i32> = expenses.iter().cloned().collect();
 
-    expenses.iter()
+    expenses
+        .iter()
         .find(|&&expense| available_expenses.contains(&(target - expense)))
         .map(|&expense| (expense, target - expense))
 }
@@ -49,27 +54,21 @@ mod tests {
 
     #[test]
     fn find_expense_pair_summing_to_value() {
-        let expenses = vec![
-            1721,
-            979,
-            366,
-            299,
-            675,
-            1456];
+        let expenses = vec![1721, 979, 366, 299, 675, 1456];
 
-        assert_eq!(Some((1721, 299)), find_expense_pair_summing_to(&expenses, 2020));
+        assert_eq!(
+            Some((1721, 299)),
+            find_expense_pair_summing_to(&expenses, 2020)
+        );
     }
 
     #[test]
     fn find_expense_triplet_summing_to_value() {
-        let expenses = vec![
-            1721,
-            979,
-            366,
-            299,
-            675,
-            1456];
+        let expenses = vec![1721, 979, 366, 299, 675, 1456];
 
-        assert_eq!(Some((979, 366, 675)), find_expense_triplet_summing_to(&expenses, 2020));
+        assert_eq!(
+            Some((979, 366, 675)),
+            find_expense_triplet_summing_to(&expenses, 2020)
+        );
     }
 }
