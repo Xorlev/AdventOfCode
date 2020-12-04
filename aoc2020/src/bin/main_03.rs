@@ -1,4 +1,3 @@
-
 use util::aoc::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

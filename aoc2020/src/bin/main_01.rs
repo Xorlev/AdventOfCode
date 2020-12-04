@@ -1,5 +1,4 @@
 use std::collections::hash_set::HashSet;
-use std::str::FromStr;
 
 use util::aoc::*;
 

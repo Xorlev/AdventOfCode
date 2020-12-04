@@ -1,7 +1,3 @@
-use std::collections::hash_set::HashSet;
-use std::str::FromStr;
-
-use failure::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
 use util::aoc::frequency::FrequencyMap;
