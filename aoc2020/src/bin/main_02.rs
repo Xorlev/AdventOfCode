@@ -7,7 +7,7 @@ lazy_static! {
     static ref RE: Regex = Regex::new("(\\d+)-(\\d+) ([a-z]): ([a-z]+)").unwrap();
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> AocResult<()> {
     let passwords: Vec<Password> = input::read(2)?
         .into_iter()
         .map(|line| Password::parse(line))

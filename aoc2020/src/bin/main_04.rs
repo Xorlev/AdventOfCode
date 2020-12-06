@@ -27,7 +27,7 @@ lazy_static! {
     .collect();
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> AocResult<()> {
     let input = input::read_all(4)?;
     let passports: Vec<Passport> = input
         .split("\n\n")

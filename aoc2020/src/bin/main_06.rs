@@ -4,10 +4,9 @@ use failure::bail;
 use itertools::{Itertools, MinMaxResult};
 use util::aoc::*;
 
-type Result<T> = std::result::Result<T, failure::Error>;
 type Answers = HashSet<char>;
 
-fn main() -> Result<()> {
+fn main() -> AocResult<()> {
     let groups_with_answers: Vec<Group> = input::read_all(6)?
         .split("\n\n")
         .map(|group| {

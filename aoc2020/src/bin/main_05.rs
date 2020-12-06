@@ -5,13 +5,11 @@ use std::collections::HashSet;
 use failure::bail;
 use util::aoc::*;
 
-type Result<T> = std::result::Result<T, failure::Error>;
-
-fn main() -> Result<()> {
+fn main() -> AocResult<()> {
     let occupied_seats: Vec<Seat> = input::read(5)?
         .iter()
         .map(|pass_code| decode_pass(pass_code))
-        .collect::<Result<Vec<_>>>()?;
+        .collect::<AocResult<Vec<_>>>()?;
 
     println!("Occupied size: {}", occupied_seats.len());
 
@@ -29,7 +27,7 @@ fn part1(occupied_seats: &[Seat]) -> i32 {
         .unwrap_or(0)
 }
 
-fn part2(occupied_seats: &[Seat]) -> Result<i32> {
+fn part2(occupied_seats: &[Seat]) -> AocResult<i32> {
     if let MinMaxResult::MinMax(min, max) = occupied_seats.iter().minmax_by_key(|k| k.seat_id()) {
         let possible_seats: HashSet<_> = (0..128)
             .into_iter()
@@ -52,7 +50,7 @@ fn part2(occupied_seats: &[Seat]) -> Result<i32> {
     }
 }
 
-fn decode_pass(pass: &str) -> Result<Seat> {
+fn decode_pass(pass: &str) -> AocResult<Seat> {
     let chars = pass.chars().collect_vec();
     let row = decode_chunk(&chars[..7], 'F', 'B', 127)?;
     let column = decode_chunk(&chars[7..10], 'L', 'R', 7)?;
@@ -60,7 +58,7 @@ fn decode_pass(pass: &str) -> Result<Seat> {
     Ok(Seat { row, column })
 }
 
-fn decode_chunk(chars: &[char], lower_char: char, upper_char: char, max_init: i32) -> Result<i32> {
+fn decode_chunk(chars: &[char], lower_char: char, upper_char: char, max_init: i32) -> AocResult<i32> {
     chars
         .iter()
         .try_fold((0, max_init, 0), |(min, max, _last), char| {

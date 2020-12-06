@@ -2,7 +2,7 @@ use std::collections::hash_set::HashSet;
 
 use util::aoc::*;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> AocResult<()> {
     let lines: Vec<String> = input::read(1)?;
     let expenses = lines.parse::<i32>()?;
 

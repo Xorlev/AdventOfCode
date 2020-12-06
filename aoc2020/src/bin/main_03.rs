@@ -1,6 +1,6 @@
 use util::aoc::*;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> AocResult<()> {
     let geology: Vec<Vec<Entity>> = input::read(3)?
         .into_iter()
         .map(|line| parse_line(line))

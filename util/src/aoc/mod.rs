@@ -11,6 +11,8 @@ pub mod input;
 pub mod linked_list;
 pub mod top_k;
 
+pub type AocResult<T> = std::result::Result<T, failure::Error>;
+
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 pub struct Point {
     pub x: i32,
