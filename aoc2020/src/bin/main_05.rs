@@ -58,7 +58,12 @@ fn decode_pass(pass: &str) -> AocResult<Seat> {
     Ok(Seat { row, column })
 }
 
-fn decode_chunk(chars: &[char], lower_char: char, upper_char: char, max_init: i32) -> AocResult<i32> {
+fn decode_chunk(
+    chars: &[char],
+    lower_char: char,
+    upper_char: char,
+    max_init: i32,
+) -> AocResult<i32> {
     chars
         .iter()
         .try_fold((0, max_init, 0), |(min, max, _last), char| {
