@@ -23,8 +23,6 @@ fn main() -> AocResult<()> {
         .map(|answers| Group::new(answers))
         .collect();
 
-    println!("Occupied size {:?}", groups_with_answers);
-
     result("Part 1", || part1(&groups_with_answers));
     result("Part 2", || part2(&groups_with_answers));
 
