@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
-use failure::bail;
-use itertools::{Itertools, MinMaxResult};
+
+
 use util::aoc::*;
 
 type Answers = HashSet<char>;

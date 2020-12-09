@@ -1,7 +1,7 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, HashSet};
 
-use failure::bail;
-use itertools::{Itertools, MinMaxResult};
+
+use itertools::{Itertools};
 use lazy_static::lazy_static;
 use regex::Regex;
 use util::aoc::*;
