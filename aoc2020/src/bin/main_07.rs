@@ -42,7 +42,11 @@ struct Bag {
 }
 
 fn part1(bag_graph: &HashMap<String, Vec<Bag>>) -> usize {
-    fn search<'a: 'b, 'b>(bag_graph: &'a HashMap<String, Vec<Bag>>, has_gold_bag: &'b mut HashMap<&'a str, bool>, bag: &str) -> bool {
+    fn search<'a: 'b, 'b>(
+        bag_graph: &'a HashMap<String, Vec<Bag>>,
+        has_gold_bag: &'b mut HashMap<&'a str, bool>,
+        bag: &str,
+    ) -> bool {
         if let Some(contains_bag) = has_gold_bag.get(bag) {
             return *contains_bag;
         }
