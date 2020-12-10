@@ -21,29 +21,29 @@ fn part1(outputs: &[i64]) -> AocResult<i64> {
 fn part2(outputs: &[i64]) -> AocResult<i64> {
     let weak_number = find_weak_number(outputs, 25)?;
 
-    for window_size in 2..outputs.len() / 2 {
-        let mut i = 1;
-        let mut sum: i64 = outputs[0..window_size].iter().sum();
-        while i + window_size < outputs.len() {
-            let end = i + window_size - 1;
-
-            sum -= outputs[i - 1];
-            sum += outputs[end];
-
-            if sum == weak_number {
-                let contiguous_set = &outputs[i..end];
-                if let MinMaxResult::MinMax(min, max) = contiguous_set.iter().cloned().minmax() {
-                    return Ok(min + max);
-                } else {
-                    panic!("output set had less than 2 values: {:?}", contiguous_set);
-                }
-            }
-
-            i += 1;
+    let mut running_total = 0;
+    let mut start_idx = 0;
+    let mut end_idx = 0;
+    while running_total != weak_number && start_idx <= end_idx && end_idx < outputs.len() {
+        if running_total > weak_number {
+            running_total -= outputs[start_idx];
+            start_idx += 1;
+        } else {
+            running_total += outputs[end_idx];
+            end_idx += 1;
         }
     }
 
-    bail!("failed to find contiguous set")
+    if running_total != weak_number {
+        bail!("failed to find contiguous set")
+    }
+
+    let contiguous_set = &outputs[start_idx..end_idx];
+    if let MinMaxResult::MinMax(min, max) = contiguous_set.iter().cloned().minmax() {
+        Ok(min + max)
+    } else {
+        panic!("output set had less than 2 values: {:?}", contiguous_set);
+    }
 }
 
 fn find_weak_number(outputs: &[i64], preamble_size: usize) -> AocResult<i64> {
