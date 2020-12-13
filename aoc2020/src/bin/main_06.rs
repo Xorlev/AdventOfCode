@@ -1,7 +1,5 @@
 use std::collections::HashSet;
 
-
-
 use util::aoc::*;
 
 type Answers = HashSet<char>;

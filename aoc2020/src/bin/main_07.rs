@@ -1,7 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-
-use itertools::{Itertools};
+use itertools::Itertools;
 use lazy_static::lazy_static;
 use regex::Regex;
 use util::aoc::*;
