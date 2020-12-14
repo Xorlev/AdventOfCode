@@ -2,7 +2,7 @@ use std::fmt::{Debug, Display};
 use std::time::Instant;
 use std::ops;
 use std::str::FromStr;
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Mul, AddAssign};
 
 pub mod astar;
 pub mod digits;
@@ -58,10 +58,22 @@ impl Point {
             for y in 0..side_length {
                 points.push(Point::new(x as i32, y as i32) + *self);
             }
-
         }
 
         points
+    }
+
+    /// Rotates a point assuming an origin of (0, 0) around a circle, rounded to the nearest integer
+    /// values.
+    pub fn rotate(&self, degrees: i32) -> Point {
+        let x = self.x as f32;
+        let y = self.y as f32;
+        let t = degrees as f32 * std::f32::consts::PI / 180.0;
+
+        Point {
+            x: (x * t.cos() - y * t.sin()).round() as i32,
+            y: (y * t.cos() + x * t.sin()).round() as i32,
+        }
     }
 
     #[inline]
@@ -86,6 +98,13 @@ impl Add for Point {
     }
 }
 
+impl AddAssign for Point {
+    fn add_assign(&mut self, rhs: Self) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+    }
+}
+
 impl Sub for Point {
     type Output = Point;
 
@@ -93,6 +112,17 @@ impl Sub for Point {
         Point {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
+        }
+    }
+}
+
+impl Mul<i32> for Point {
+    type Output = Point;
+
+    fn mul(self, rhs: i32) -> Self::Output {
+        Point {
+            x: self.x * rhs,
+            y: self.y * rhs,
         }
     }
 }
