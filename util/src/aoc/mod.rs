@@ -190,7 +190,7 @@ pub trait Reduce<T> {
 
 impl<T, I> Reduce<T> for I
     where
-        I: Iterator<Item = T>,
+        I: Iterator<Item=T>,
 {
     #[inline]
     fn reduce<F>(mut self, f: F) -> Option<T>

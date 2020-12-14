@@ -82,20 +82,20 @@ impl Grid {
             match state {
                 State::Empty => {
                     if occupied_seats == 0 {
-                        new_states.insert(point.clone(), State::Occupied);
+                        new_states.insert(point, State::Occupied);
                     }
                 }
                 State::Floor => {}
                 State::Occupied => {
                     if occupied_seats >= 4 {
-                        new_states.insert(point.clone(), State::Empty);
+                        new_states.insert(point, State::Empty);
                     }
                 }
             }
         });
 
         new_states.iter().for_each(|(point, new_state)| {
-            self.update_point(point, new_state.clone());
+            self.update_point(point, *new_state);
         });
 
         !new_states.is_empty()
@@ -114,20 +114,20 @@ impl Grid {
             match state {
                 State::Empty => {
                     if occupied_seats == 0 {
-                        new_states.insert(point.clone(), State::Occupied);
+                        new_states.insert(point, State::Occupied);
                     }
                 }
                 State::Floor => {}
                 State::Occupied => {
                     if occupied_seats >= 5 {
-                        new_states.insert(point.clone(), State::Empty);
+                        new_states.insert(point, State::Empty);
                     }
                 }
             }
         });
 
         new_states.iter().for_each(|(point, new_state)| {
-            self.update_point(point, new_state.clone());
+            self.update_point(point, *new_state);
         });
 
         !new_states.is_empty()
@@ -135,16 +135,15 @@ impl Grid {
 
     fn explore(&self, reference_point: &Point, direction: &Point) -> bool {
         let mut point = *reference_point + *direction;
-
         while let Some(state) = self.lookup_point(&point) {
             match state {
                 State::Empty => return false,
-                State::Floor => point = point + *direction,
+                State::Floor => point += *direction,
                 State::Occupied => return true,
             }
         }
 
-        return false;
+        false
     }
 
     fn print_grid(&self) {
@@ -212,11 +211,7 @@ enum State {
 
 impl State {
     pub(crate) fn is_occupied(&self) -> bool {
-        if let State::Occupied = self {
-            true
-        } else {
-            false
-        }
+        matches!(self, State::Occupied)
     }
 }
 
