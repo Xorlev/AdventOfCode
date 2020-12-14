@@ -1,5 +1,5 @@
 use failure::bail;
-use itertools::{Itertools, MinMaxResult};
+use itertools::Itertools;
 use std::collections::HashMap;
 use util::aoc::*;
 
