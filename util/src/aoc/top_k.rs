@@ -8,7 +8,7 @@ pub trait TopK: Iterator {
             Self: Sized,
             Self::Item: Ord,
     {
-        let mut heap = BinaryHeap::<(Self::Item)>::with_capacity(k + 1);
+        let mut heap = BinaryHeap::<Self::Item>::with_capacity(k + 1);
 
         self.for_each(|item| {
             heap.push(item);

@@ -87,7 +87,7 @@ impl<T> UsefulLinkedList<T> where T: std::fmt::Debug {
         mem::swap(&mut removed_node, &mut self.nodes[node_index.0]);
         self.free.push(node_index);
 
-        let mut removed_node = removed_node.unwrap();
+        let removed_node = removed_node.unwrap();
 
         if Some(node_index) == self.head {
             self.head = removed_node.next

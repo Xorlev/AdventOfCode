@@ -15,7 +15,9 @@ fn main() -> AocResult<()> {
         .filter_map(|(index, str)| str.parse::<i64>().ok().map(|bus_id| (index, bus_id)))
         .collect_vec();
 
-    result("Part 1", || part1(earliest_timestamp, &active_buses_with_offset))?;
+    result("Part 1", || {
+        part1(earliest_timestamp, &active_buses_with_offset)
+    })?;
     result("Part 2", || part2(&active_buses_with_offset))?;
 
     Ok(())
@@ -72,7 +74,6 @@ fn part2(bus_lines: &[(usize, i64)]) -> AocResult<i64> {
     chinese_remainder(&residues, &modulii)
         .ok_or(failure::format_err!("system is not pairwise coprime"))
 }
-
 
 // I'm not quite motivated enough to write my own CRT impl,
 // this is from https://rosettacode.org/wiki/Chinese_remainder_theorem#Rust.
