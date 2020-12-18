@@ -1,7 +1,6 @@
 use failure::bail;
 use itertools::Itertools;
-use std::collections::HashMap;
-use std::iter::FromIterator;
+
 use std::str::FromStr;
 use util::aoc::*;
 
@@ -57,7 +56,7 @@ impl Ship {
             Action::Right(degrees) => {
                 self.direction = (self.direction + degrees).checked_rem_euclid(360).unwrap()
             }
-            Action::Forward(steps) => panic!("untranslated forward action!"),
+            Action::Forward(_steps) => panic!("untranslated forward action!"),
         };
         println!("A: pos: {:?}, dir: {:?}", self.position, self.direction);
     }

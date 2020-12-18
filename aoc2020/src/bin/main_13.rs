@@ -1,8 +1,6 @@
 use failure::bail;
 use itertools::Itertools;
-use std::collections::HashMap;
-use std::iter::FromIterator;
-use std::str::FromStr;
+
 use util::aoc::*;
 
 fn main() -> AocResult<()> {

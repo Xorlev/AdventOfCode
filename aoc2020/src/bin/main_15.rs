@@ -1,9 +1,5 @@
-use failure::{bail, format_err};
-use itertools::Itertools;
-use lazy_static::lazy_static;
-use regex::Regex;
 use std::collections::HashMap;
-use std::str::FromStr;
+
 use util::aoc::*;
 
 fn main() -> AocResult<()> {
