@@ -11,7 +11,10 @@ pub struct UsefulLinkedList<T> {
     tail: Option<Idx>,
 }
 
-impl<T> UsefulLinkedList<T> where T: std::fmt::Debug {
+impl<T> UsefulLinkedList<T>
+where
+    T: std::fmt::Debug,
+{
     pub fn new() -> UsefulLinkedList<T> {
         UsefulLinkedList {
             nodes: Vec::new(),
@@ -70,7 +73,6 @@ impl<T> UsefulLinkedList<T> where T: std::fmt::Debug {
 
         if let Some(next) = self[node_index].next {
             self[next].prev = Some(new_node_idx);
-
         }
 
         self[node_index].next = Some(new_node_idx);

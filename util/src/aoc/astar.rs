@@ -4,12 +4,12 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::hash::Hash;
 
-type Cost=u32;
+type Cost = u32;
 
 #[derive(Eq, PartialEq, Debug)]
 pub struct AStarResult<T: Eq + Hash> {
     pub failed: bool,
-    pub path: Vec<T>
+    pub path: Vec<T>,
 }
 
 impl<T: Clone + Eq + Hash> AStarResult<T> {
@@ -28,41 +28,45 @@ impl<T: Clone + Eq + Hash> AStarResult<T> {
 
         AStarResult {
             failed: false,
-            path: points
+            path: points,
         }
     }
 }
 
 #[derive(Eq, PartialEq, Debug)]
 struct ValueWithCost<T>
-        where T: Eq {
+where
+    T: Eq,
+{
     value: T,
-    cost: Cost
+    cost: Cost,
 }
 
-impl < T: Eq> Ord for ValueWithCost<T> {
+impl<T: Eq> Ord for ValueWithCost<T> {
     fn cmp(&self, other: &ValueWithCost<T>) -> Ordering {
         other.cost.cmp(&self.cost)
     }
 }
 
-impl <T: Eq> PartialOrd for ValueWithCost<T> {
+impl<T: Eq> PartialOrd for ValueWithCost<T> {
     fn partial_cmp(&self, other: &ValueWithCost<T>) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-pub fn search<T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) ->
-Vec<T>>(start: &T, h_fn: HF, move_fn: MF) -> AStarResult<T> {
+pub fn search<T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) -> Vec<T>>(
+    start: &T,
+    h_fn: HF,
+    move_fn: MF,
+) -> AStarResult<T> {
     let mut frontier: BinaryHeap<ValueWithCost<T>> = BinaryHeap::new();
     frontier.push(ValueWithCost {
         value: start.to_owned(),
-        cost: h_fn(&start)
+        cost: h_fn(&start),
     });
     let mut previous: HashMap<T, T> = HashMap::new();
     let mut path_cost: HashMap<T, Cost> = HashMap::new();
     path_cost.insert(start.to_owned(), 0);
-
 
     while let Some(ValueWithCost { value, cost: _ }) = frontier.pop() {
         if h_fn(&value) == 0 {
@@ -78,7 +82,7 @@ Vec<T>>(start: &T, h_fn: HF, move_fn: MF) -> AStarResult<T> {
 
                 frontier.push(ValueWithCost {
                     value: nv.to_owned(),
-                    cost: new_cost + h_fn(&new_value)
+                    cost: new_cost + h_fn(&new_value),
                 });
 
                 path_cost.insert(nv.to_owned(), new_cost);
@@ -87,16 +91,15 @@ Vec<T>>(start: &T, h_fn: HF, move_fn: MF) -> AStarResult<T> {
         }
     }
 
-
     AStarResult {
         failed: true,
-        path: vec![]
+        path: vec![],
     }
 }
 
 fn get_cost<T: Clone + Hash + Eq>(value: &T, cost_map: &HashMap<T, Cost>) -> Option<u32> {
     match cost_map.get(value) {
         Some(cost) => Some(cost.clone()),
-        _ => None
+        _ => None,
     }
 }

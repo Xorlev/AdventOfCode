@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io;
-use std::io::{BufRead, Read};
 use std::io::BufReader;
+use std::io::{BufRead, Read};
 use std::path::Path;
 
 type IoResult<T> = Result<T, io::Error>;

@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Display};
-use std::time::Instant;
+use std::ops::{Add, AddAssign, Mul, Sub};
 use std::str::FromStr;
-use std::ops::{Add, Sub, Mul, AddAssign};
+use std::time::Instant;
 
 pub mod astar;
 pub mod digits;
@@ -127,9 +127,11 @@ impl Mul<i32> for Point {
 }
 
 pub fn time<S, F, T>(label: S, function: F) -> T
-    where F: Fn() -> T,
-          S: ToString + Display,
-          T: Debug {
+where
+    F: Fn() -> T,
+    S: ToString + Display,
+    T: Debug,
+{
     let start_time = Instant::now();
     let result: T = function();
     let end_time = Instant::now();
@@ -138,9 +140,11 @@ pub fn time<S, F, T>(label: S, function: F) -> T
 }
 
 pub fn result<S, F, T>(label: S, function: F) -> T
-    where F: Fn() -> T,
-          S: ToString + Display,
-          T: Debug {
+where
+    F: Fn() -> T,
+    S: ToString + Display,
+    T: Debug,
+{
     let result = time(label, function);
     println!(" => {:?}", result);
     result
@@ -152,7 +156,9 @@ pub trait ParseAs {
 
 impl<T: AsRef<str>> ParseAs for Vec<T> {
     fn parse<F: FromStr>(&self) -> Result<Vec<F>, <F as FromStr>::Err> {
-        self.iter().map(|val| FromStr::from_str(val.as_ref())).collect()
+        self.iter()
+            .map(|val| FromStr::from_str(val.as_ref()))
+            .collect()
     }
 }
 
@@ -168,7 +174,10 @@ impl<T> SliceExt for [T] {
 
     fn get_two_mut(&mut self, a: usize, b: usize) -> (&mut Self::Item, &mut Self::Item) {
         if a == b {
-            panic!("[T]::get_two_mut(): indices must be disjoint, given: (a={}, b={})", a, b);
+            panic!(
+                "[T]::get_two_mut(): indices must be disjoint, given: (a={}, b={})",
+                a, b
+            );
         }
 
         unsafe {
@@ -182,20 +191,20 @@ impl<T> SliceExt for [T] {
 // Reduce implementation by dtolnay, until fold_first() is stablized.
 pub trait Reduce<T> {
     fn reduce<F>(self, f: F) -> Option<T>
-        where
-            Self: Sized,
-            F: FnMut(T, T) -> T;
+    where
+        Self: Sized,
+        F: FnMut(T, T) -> T;
 }
 
 impl<T, I> Reduce<T> for I
-    where
-        I: Iterator<Item=T>,
+where
+    I: Iterator<Item = T>,
 {
     #[inline]
     fn reduce<F>(mut self, f: F) -> Option<T>
-        where
-            Self: Sized,
-            F: FnMut(T, T) -> T,
+    where
+        Self: Sized,
+        F: FnMut(T, T) -> T,
     {
         self.next().map(|first| self.fold(first, f))
     }

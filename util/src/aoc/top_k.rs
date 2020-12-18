@@ -4,9 +4,9 @@ pub trait TopK: Iterator {
     /// Calculates a rolling Top-K set of items from an iterator in constant space.
     /// Returns a sorted vector of the top-k elements, sorted descending.
     fn topk(self, k: usize) -> Vec<Self::Item>
-        where
-            Self: Sized,
-            Self::Item: Ord,
+    where
+        Self: Sized,
+        Self::Item: Ord,
     {
         let mut heap = BinaryHeap::<Self::Item>::with_capacity(k + 1);
 
