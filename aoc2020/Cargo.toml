@@ -13,3 +13,5 @@ lazy_static = "1.2"
 permutohedron = "0.2.4"
 util = { path = "../util" }
 regex = "1.1"
+pest = "2.1"
+pest_derive = "2.1"

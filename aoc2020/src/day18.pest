@@ -1,0 +1,13 @@
+num = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ (^"e" ~ int)? }
+    int = { ("+" | "-")? ~ ASCII_DIGIT+ }
+
+operation = _{ add | multiply }
+    add      = { "+" }
+    multiply = { "*" }
+
+expr = { term ~ (operation ~ term)* }
+term = _{ num | "(" ~ expr ~ ")" }
+
+calculation = _{ SOI ~ expr ~ EOI }
+
+WHITESPACE = _{ " " | "\t" }
