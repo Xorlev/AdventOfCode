@@ -1,4 +1,4 @@
-use failure::bail;
+use failure::{bail, format_err};
 use itertools::Itertools;
 
 use util::aoc::*;
@@ -8,7 +8,7 @@ fn main() -> AocResult<()> {
 
     let earliest_timestamp = input[0].parse()?;
     let active_buses_with_offset = input[1]
-        .split(",")
+        .split(',')
         .enumerate()
         .filter_map(|(index, str)| str.parse::<i64>().ok().map(|bus_id| (index, bus_id)))
         .collect_vec();
@@ -22,11 +22,6 @@ fn main() -> AocResult<()> {
 }
 
 fn part1(earliest_timestamp: i64, active_buses: &[(usize, i64)]) -> AocResult<i64> {
-    println!(
-        "earliest_timestamp: {}, active_buses: {:?}",
-        earliest_timestamp, active_buses
-    );
-
     if let Some((bus_id, minutes_to_departure)) = active_buses
         .iter()
         .map(|&(_, bus_id)| {
@@ -38,10 +33,6 @@ fn part1(earliest_timestamp: i64, active_buses: &[(usize, i64)]) -> AocResult<i6
         })
         .min_by_key(|(_, next)| *next)
     {
-        println!(
-            "bus_id: {}, minutes_to_departure: {}",
-            bus_id, minutes_to_departure
-        );
         Ok(bus_id * minutes_to_departure)
     } else {
         bail!("Did not find a bus.");
@@ -70,7 +61,7 @@ fn part2(bus_lines: &[(usize, i64)]) -> AocResult<i64> {
     }
 
     chinese_remainder(&residues, &modulii)
-        .ok_or(failure::format_err!("system is not pairwise coprime"))
+        .ok_or_else(|| format_err!("system is not pairwise coprime"))
 }
 
 // I'm not quite motivated enough to write my own CRT impl,

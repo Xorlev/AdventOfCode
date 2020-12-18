@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::HashSet;
 
 use failure::_core::str::FromStr;
 use failure::bail;
@@ -11,14 +11,14 @@ fn main() -> AocResult<()> {
         .map(|line| line.parse())
         .collect::<AocResult<Vec<_>>>()?;
 
-    result("Part 1", || part1(&instructions));
-    result("Part 2", || part2(&instructions));
+    result("Part 1", || part1(&instructions))?;
+    result("Part 2", || part2(&instructions))?;
 
     Ok(())
 }
 
-fn part1(instructions: &Vec<Instruction>) -> AocResult<i32> {
-    let mut processor = Processor::new(instructions.clone());
+fn part1(instructions: &[Instruction]) -> AocResult<i32> {
+    let mut processor = Processor::new(instructions.to_vec());
     // processor.add_tracer(Box::new(Printer::default()));
     processor.add_tracer(Box::new(LoopDetector::default()));
 
@@ -31,7 +31,7 @@ fn part1(instructions: &Vec<Instruction>) -> AocResult<i32> {
     }
 }
 
-fn part2(instructions: &Vec<Instruction>) -> AocResult<i32> {
+fn part2(instructions: &[Instruction]) -> AocResult<i32> {
     // Find candidate instructions to flip.
     let jmp_indices = instructions
         .iter()
@@ -46,7 +46,7 @@ fn part2(instructions: &Vec<Instruction>) -> AocResult<i32> {
         .collect_vec();
 
     for idx in jmp_indices {
-        let mut modified_instructions = instructions.clone();
+        let mut modified_instructions = instructions.to_vec();
         modified_instructions[idx] = Instruction::Nop;
 
         let mut processor = Processor::new(modified_instructions);
@@ -63,8 +63,7 @@ fn part2(instructions: &Vec<Instruction>) -> AocResult<i32> {
 
 pub trait Tracer {
     /// Returning true will halt execution before executing the instruction at pc.
-    fn before_execute(&mut self, pc: i32, acc: i32, instruction: &Vec<Instruction>)
-        -> TracerAction;
+    fn before_execute(&mut self, pc: i32, acc: i32, instruction: &[Instruction]) -> TracerAction;
 }
 
 pub enum TracerAction {
@@ -76,12 +75,7 @@ pub enum TracerAction {
 struct Printer;
 
 impl Tracer for Printer {
-    fn before_execute(
-        &mut self,
-        pc: i32,
-        acc: i32,
-        instruction: &Vec<Instruction>,
-    ) -> TracerAction {
+    fn before_execute(&mut self, pc: i32, acc: i32, instruction: &[Instruction]) -> TracerAction {
         println!("{:?}, pc:{}, acc:{}", instruction[pc as usize], pc, acc);
 
         TracerAction::Resume
@@ -94,7 +88,7 @@ struct LoopDetector {
 }
 
 impl Tracer for LoopDetector {
-    fn before_execute(&mut self, pc: i32, acc: i32, _: &Vec<Instruction>) -> TracerAction {
+    fn before_execute(&mut self, pc: i32, acc: i32, _: &[Instruction]) -> TracerAction {
         if !self.pc_set.insert(pc) {
             TracerAction::Halt(acc)
         } else {

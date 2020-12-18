@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use itertools::Itertools;
 use lazy_static::lazy_static;
@@ -8,8 +8,6 @@ use util::aoc::*;
 lazy_static! {
     static ref RE: Regex = Regex::new("(\\d+) ([a-z]+ [a-z]+) bag").unwrap();
 }
-
-type Answers = HashSet<char>;
 
 fn main() -> AocResult<()> {
     let bag_graph: HashMap<String, Vec<Bag>> = input::read(7)?

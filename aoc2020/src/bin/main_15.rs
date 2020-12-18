@@ -4,7 +4,7 @@ use util::aoc::*;
 
 fn main() -> AocResult<()> {
     let input = input::read(15)?[0]
-        .split(",")
+        .split(',')
         .map(|s| s.parse::<i64>().map_err(|e| e.into()))
         .collect::<AocResult<Vec<i64>>>()?;
 
