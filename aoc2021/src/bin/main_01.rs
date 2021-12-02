@@ -15,16 +15,16 @@ fn part1(depths: &[i32]) -> i32 {
     depths
         .iter()
         .tuple_windows()
-        .map(|(a, b)| if a < b { 1 } else { 0 })
-        .sum()
+        .filter(|&(a, b)| a < b)
+        .count() as i32
 }
 
 fn part2(depths: &[i32]) -> i32 {
     depths
         .iter()
         .tuple_windows()
-        .map(|(a, b, c, d)| if (a + b + c) < (b + c + d) { 1 } else { 0 })
-        .sum()
+        .filter(|&(a, b, c, d)| (a + b + c) < (b + c + d))
+        .count() as i32
 }
 
 #[cfg(test)]
