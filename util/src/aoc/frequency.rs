@@ -29,6 +29,20 @@ impl<T: Eq + Hash> FrequencyMap<T> {
     pub fn count(&self, value: &T) -> u64 {
         self.counts.get(value).cloned().unwrap_or(0)
     }
+
+    pub fn min(&self) -> Option<&T> {
+        self.counts
+            .iter()
+            .min_by_key(|entry| entry.1)
+            .map(|(k, _v)| k)
+    }
+
+    pub fn max(&self) -> Option<&T> {
+        self.counts
+            .iter()
+            .max_by_key(|entry| entry.1)
+            .map(|(k, _v)| k)
+    }
 }
 
 impl<T: Eq + Hash> FromIterator<T> for FrequencyMap<T> {
