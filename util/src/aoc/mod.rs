@@ -84,6 +84,10 @@ impl Point {
     pub fn distance(&self, other: &Point) -> f32 {
         (((other.x - self.x) as f32).powf(2.0) + ((self.y - other.y) as f32).powf(2.0)).sqrt()
     }
+
+    pub fn to_index(&self, x_max: usize) -> usize {
+        (self.y * x_max as i32 + self.x) as usize
+    }
 }
 
 impl Add for Point {
@@ -123,6 +127,27 @@ impl Mul<i32> for Point {
             x: self.x * rhs,
             y: self.y * rhs,
         }
+    }
+}
+
+pub struct PointIterator {
+    start: Point,
+    delta: Point,
+}
+
+impl PointIterator {
+    pub fn new(start: Point, delta: Point) -> PointIterator {
+        PointIterator { start, delta }
+    }
+}
+
+impl Iterator for PointIterator {
+    type Item = Point;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let value = self.start.clone();
+        self.start += self.delta;
+        Some(value)
     }
 }
 
