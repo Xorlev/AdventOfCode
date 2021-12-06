@@ -7,6 +7,7 @@ pub mod astar;
 pub mod digits;
 pub mod frequency;
 pub mod input;
+pub mod lines;
 pub mod linked_list;
 pub mod top_k;
 
