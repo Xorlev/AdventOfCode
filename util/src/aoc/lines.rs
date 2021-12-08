@@ -1,6 +1,8 @@
 use aoc::Point;
+use std::cmp::Ordering;
+use std::convert::Infallible;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LineSegment {
     start: Point,
     end: Point,
@@ -11,12 +13,8 @@ impl LineSegment {
         LineSegment { start, end }
     }
 
-    pub fn len(&self) -> i32 {
-        // As these segments are always horizontal or vertical, we can be very lazy about this.
-        let x_len = (self.start.x - self.end.x).abs();
-        let y_len = (self.start.y - self.start.y).abs();
-
-        std::cmp::max(x_len, y_len)
+    pub fn len(&self) -> f32 {
+        self.start.distance(&self.end)
     }
 
     pub fn intersection(&self, other_segment: &LineSegment) -> Option<Point> {
@@ -26,6 +24,9 @@ impl LineSegment {
         }
     }
 
+    pub fn point_iterator(&self) -> LineSegmentPointIterator {
+        LineSegmentPointIterator::new(self.clone())
+    }
 
     /// Borrowed from line_intersection crate, and adapted for this integer-only AoC world.
     pub fn relate(&self, other: &LineSegment) -> LineRelation {
@@ -55,8 +56,8 @@ impl LineSegment {
             let u = Self::cross_div(&q_minus_p, &r, r_cross_s);
 
             // are the intersection coordinates both in range?
-            let t_in_range = 0f32 <= t && t <= 1f32;
-            let u_in_range = 0f32 <= u && u <= 1f32;
+            let t_in_range = (0f32..=1f32).contains(&t);
+            let u_in_range = (0f32..=1f32).contains(&u);
 
             if t_in_range && u_in_range {
                 // there is an intersection
@@ -100,4 +101,48 @@ pub enum LineRelation {
     Collinear,
     /// The line intervals are parallel or anti-parallel.
     Parallel,
+}
+
+pub struct LineSegmentPointIterator {
+    line: LineSegment,
+    current_point: Point,
+    delta: Point,
+}
+
+impl LineSegmentPointIterator {
+    pub fn new(line: LineSegment) -> LineSegmentPointIterator {
+        // Determine delta.
+        let start = line.start;
+        let end = line.end;
+
+        let delta = match (start.x - end.x, start.y - end.y) {
+            (0, 0) => panic!("Not a line"),
+            (x, 0) if x > 0 => Point::new(1, 0),
+            (x, 0) if x < 0 => Point::new(-1, 0),
+            (0, y) if y > 0 => Point::new(0, 1),
+            (0, y) if y < 0 => Point::new(0, -1),
+            _ => panic!("Unmatched"),
+        };
+
+        LineSegmentPointIterator {
+            current_point: line.start,
+            line,
+            delta,
+        }
+    }
+}
+
+impl Iterator for LineSegmentPointIterator {
+    type Item = Point;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let current = self.current_point;
+        if current == self.line.end {
+            None
+        } else {
+            self.current_point += self.delta;
+
+            Some(current)
+        }
+    }
 }

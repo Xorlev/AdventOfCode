@@ -16,7 +16,7 @@ fn parse(input: &str) -> (Vec<i32>, Vec<BingoBoard>) {
     let drawn_numbers = parts
         .next()
         .unwrap()
-        .split(",")
+        .split(',')
         .map(|s| s.parse().unwrap())
         .collect();
     let bingo_boards = parts
@@ -80,7 +80,7 @@ struct BingoBoard {
 impl BingoBoard {
     fn new<T: IntoIterator<Item = i32>>(iter: T) -> BingoBoard {
         BingoBoard {
-            numbers: iter.into_iter().map(|v| Unmarked(v)).collect(),
+            numbers: iter.into_iter().map(Unmarked).collect(),
         }
     }
 
@@ -134,7 +134,7 @@ impl BingoBoard {
 mod tests {
     use super::*;
 
-    const SAMPLE_INPUT: &'static str = r#"7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+    const SAMPLE_INPUT: &str = r#"7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
  8  2 23  4 24
@@ -156,14 +156,14 @@ mod tests {
 
     #[test]
     fn part1_sample() {
-        let (drawn_numbers, boards) = parse(&SAMPLE_INPUT);
+        let (drawn_numbers, boards) = parse(SAMPLE_INPUT);
 
         assert_eq!(4512, part1(&drawn_numbers, boards));
     }
 
     #[test]
     fn part2_sample() {
-        let (drawn_numbers, boards) = parse(&SAMPLE_INPUT);
+        let (drawn_numbers, boards) = parse(SAMPLE_INPUT);
 
         assert_eq!(1924, part2(&drawn_numbers, boards));
     }
