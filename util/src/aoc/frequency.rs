@@ -30,6 +30,10 @@ impl<T: Eq + Hash> FrequencyMap<T> {
         self.counts.get(value).cloned().unwrap_or(0)
     }
 
+    pub fn entries(&self) -> impl Iterator<Item = (&T, &u64)> {
+        self.counts.iter()
+    }
+
     pub fn min(&self) -> Option<&T> {
         self.counts
             .iter()

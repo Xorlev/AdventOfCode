@@ -1,9 +1,9 @@
 use aoc::Point;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LineSegment {
-    start: Point,
-    end: Point,
+    pub start: Point,
+    pub end: Point,
 }
 
 impl LineSegment {
@@ -11,12 +11,8 @@ impl LineSegment {
         LineSegment { start, end }
     }
 
-    pub fn len(&self) -> i32 {
-        // As these segments are always horizontal or vertical, we can be very lazy about this.
-        let x_len = (self.start.x - self.end.x).abs();
-        let y_len = (self.start.y - self.start.y).abs();
-
-        std::cmp::max(x_len, y_len)
+    pub fn len(&self) -> f32 {
+        self.start.distance(&self.end)
     }
 
     pub fn intersection(&self, other_segment: &LineSegment) -> Option<Point> {
@@ -26,6 +22,9 @@ impl LineSegment {
         }
     }
 
+    pub fn point_iterator(&self) -> LineSegmentPointIterator {
+        LineSegmentPointIterator::new(self.clone())
+    }
 
     /// Borrowed from line_intersection crate, and adapted for this integer-only AoC world.
     pub fn relate(&self, other: &LineSegment) -> LineRelation {
@@ -55,8 +54,8 @@ impl LineSegment {
             let u = Self::cross_div(&q_minus_p, &r, r_cross_s);
 
             // are the intersection coordinates both in range?
-            let t_in_range = 0f32 <= t && t <= 1f32;
-            let u_in_range = 0f32 <= u && u <= 1f32;
+            let t_in_range = (0f32..=1f32).contains(&t);
+            let u_in_range = (0f32..=1f32).contains(&u);
 
             if t_in_range && u_in_range {
                 // there is an intersection
@@ -100,4 +99,168 @@ pub enum LineRelation {
     Collinear,
     /// The line intervals are parallel or anti-parallel.
     Parallel,
+}
+
+pub struct LineSegmentPointIterator {
+    line: LineSegment,
+    current_point: Point,
+    delta: Point,
+}
+
+impl LineSegmentPointIterator {
+    pub fn new(line: LineSegment) -> LineSegmentPointIterator {
+        // Determine delta.
+        let start = line.start;
+        let end = line.end;
+
+        let delta = match (end.x - start.x, end.y - start.y) {
+            (0, 0) => panic!("Not a line"),
+            (x, 0) if x > 0 => Point::new(1, 0),
+            (x, 0) if x < 0 => Point::new(-1, 0),
+            (0, y) if y > 0 => Point::new(0, 1),
+            (0, y) if y < 0 => Point::new(0, -1),
+            (x, y) if x > 0 && y > 0 => Point::new(1, 1),
+            (x, y) if x > 0 && y < 0 => Point::new(1, -1),
+            (x, y) if x < 0 && y > 0 => Point::new(-1, 1),
+            (x, y) if x < 0 && y < 0 => Point::new(-1, -1),
+            x => panic!("Unmatched: {:?}", x),
+        };
+
+        LineSegmentPointIterator {
+            current_point: line.start - delta,
+            line,
+            delta,
+        }
+    }
+}
+
+impl Iterator for LineSegmentPointIterator {
+    type Item = Point;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current_point == self.line.end {
+            None
+        } else {
+            self.current_point += self.delta;
+            Some(self.current_point)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn point_iterator_two_horizontal() {
+        let start = Point::new(0, 0);
+        let end = Point::new(1, 0);
+
+        assert_eq!(
+            vec![start, end],
+            LineSegment::new(start, end)
+                .point_iterator()
+                .collect::<Vec<_>>()
+        )
+    }
+
+    #[test]
+    fn point_iterator_horizontal_positive() {
+        let start = Point::new(0, 0);
+        let end = Point::new(5, 0);
+
+        assert_eq!(
+            vec![
+                start,
+                Point::new(1, 0),
+                Point::new(2, 0),
+                Point::new(3, 0),
+                Point::new(4, 0),
+                end
+            ],
+            LineSegment::new(start, end)
+                .point_iterator()
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn point_iterator_vertical_positive() {
+        let start = Point::new(0, 0);
+        let end = Point::new(0, 5);
+
+        assert_eq!(
+            vec![
+                start,
+                Point::new(0, 1),
+                Point::new(0, 2),
+                Point::new(0, 3),
+                Point::new(0, 4),
+                end
+            ],
+            LineSegment::new(start, end)
+                .point_iterator()
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn point_iterator_horizontal_negative() {
+        let start = Point::new(5, 0);
+        let end = Point::new(0, 0);
+
+        assert_eq!(
+            vec![
+                start,
+                Point::new(4, 0),
+                Point::new(3, 0),
+                Point::new(2, 0),
+                Point::new(1, 0),
+                end
+            ],
+            LineSegment::new(start, end)
+                .point_iterator()
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn point_iterator_vertical_negative() {
+        let start = Point::new(0, 5);
+        let end = Point::new(0, 0);
+
+        assert_eq!(
+            vec![
+                start,
+                Point::new(0, 4),
+                Point::new(0, 3),
+                Point::new(0, 2),
+                Point::new(0, 1),
+                end
+            ],
+            LineSegment::new(start, end)
+                .point_iterator()
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn point_iterator_vertical_negative2() {
+        let start = Point::new(0, 3);
+        let end = Point::new(0, -2);
+
+        assert_eq!(
+            vec![
+                start,
+                Point::new(0, 2),
+                Point::new(0, 1),
+                Point::new(0, 0),
+                Point::new(0, -1),
+                end
+            ],
+            LineSegment::new(start, end)
+                .point_iterator()
+                .collect::<Vec<_>>()
+        );
+    }
 }
