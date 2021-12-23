@@ -6,6 +6,7 @@ use std::time::Instant;
 pub mod astar;
 pub mod digits;
 pub mod frequency;
+pub mod grid;
 pub mod input;
 pub mod lines;
 pub mod linked_list;
