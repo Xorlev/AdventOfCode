@@ -24,6 +24,12 @@ impl<T> Grid<T> {
         self.states[point.y as usize][point.x as usize] = state;
     }
 
+    pub fn update_fn(&mut self, point: &Point, state_fn: fn(&T) -> T) -> &T {
+        let new_state = state_fn(&self.states[point.y as usize][point.x as usize]);
+        self.states[point.y as usize][point.x as usize] = new_state;
+        &self.states[point.y as usize][point.x as usize]
+    }
+
     pub fn point_iterator(&self) -> PointIterator<T> {
         PointIterator {
             grid: self,
