@@ -1,11 +1,6 @@
-use std::collections::hash_map::Entry;
-use std::collections::{HashMap, HashSet};
-use std::str::FromStr;
-
-use failure::{bail, Fail};
+use bit_set::BitSet;
 use itertools::Itertools;
-use util::aoc::frequency::FrequencyMap;
-use util::aoc::grid::Grid;
+use std::collections::HashMap;
 use util::aoc::*;
 
 use crate::Cave::{Big, Small};
@@ -16,8 +11,8 @@ type CaveMap = HashMap<Cave, Vec<Cave>>;
 enum Cave {
     Start,
     End,
-    Big(String),
-    Small(String),
+    Big(usize),
+    Small(usize),
 }
 
 impl Cave {
@@ -34,18 +29,32 @@ impl Cave {
             _ => false,
         }
     }
-}
 
-impl FromStr for Cave {
-    type Err = failure::Error;
+    fn index(&self) -> usize {
+        match self {
+            Cave::Start => 0,
+            Cave::End => 1,
+            Big(index) => *index,
+            Small(index) => *index,
+        }
+    }
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
+    fn parse_node(
+        s: &str,
+        string_to_index: &mut HashMap<String, usize>,
+        current_index: &mut usize,
+    ) -> Cave {
+        let index = *string_to_index.entry(s.to_string()).or_insert_with(|| {
+            *current_index += 1;
+            *current_index
+        });
+
+        match s {
             "start" => Cave::Start,
             "end" => Cave::End,
-            s if s.chars().all(|c| c.is_uppercase()) => Cave::Big(s.to_string()),
-            s => Cave::Small(s.to_string()),
-        })
+            s if s.chars().all(|c| c.is_uppercase()) => Cave::Big(index),
+            _ => Cave::Small(index),
+        }
     }
 }
 
@@ -59,17 +68,19 @@ fn main() -> AocResult<()> {
 }
 
 fn parse(input: Vec<String>) -> CaveMap {
+    let mut current_index = 1usize;
+    let mut string_to_index = HashMap::new();
     let mut cave_map: CaveMap = HashMap::new();
 
     input
         .into_iter()
         .flat_map(
             |line| match line.split('-').collect_tuple().expect("Unexpected line") {
-                (start, end) => vec![
-                    (start.parse::<Cave>().unwrap(), end.parse::<Cave>().unwrap()),
-                    (end.parse::<Cave>().unwrap(), start.parse::<Cave>().unwrap()),
-                ],
-                _ => panic!("Oh no"),
+                (start, end) => {
+                    let start = Cave::parse_node(start, &mut string_to_index, &mut current_index);
+                    let end = Cave::parse_node(end, &mut string_to_index, &mut current_index);
+                    vec![(start.clone(), end.clone()), (end, start)]
+                }
             },
         )
         .filter(|(start, end)| *end != Cave::Start && *start != Cave::End)
@@ -81,42 +92,49 @@ fn parse(input: Vec<String>) -> CaveMap {
 }
 
 #[derive(Debug, Clone)]
-struct CaveWithPath {
-    path: Vec<Cave>,
-    last_cave: Cave,
+struct CaveWithPath<'a> {
+    path: Vec<&'a Cave>,
+    visited: BitSet,
+    has_visited_twice: bool,
+    last_cave: &'a Cave,
 }
 
-impl CaveWithPath {
-    pub fn new(cave: Cave) -> CaveWithPath {
+impl<'a> CaveWithPath<'a> {
+    pub fn new(cave: &'a Cave) -> CaveWithPath<'a> {
+        let mut visited = BitSet::new();
+        visited.insert(cave.index());
+
         CaveWithPath {
-            path: vec![cave.clone()],
+            path: vec![cave],
+            visited,
+            has_visited_twice: false,
             last_cave: cave,
         }
     }
 
-    pub fn last_step(&self) -> Option<Cave> {
-        self.path.last().cloned()
+    pub fn last_step(&self) -> Option<&Cave> {
+        self.path.last().map(|&c| c)
     }
 
     pub fn is_visited(&self, cave: &Cave) -> bool {
-        self.path.contains(cave)
+        self.visited.contains(cave.index())
     }
 
-    pub fn max_small_cave_visits(&self) -> usize {
-        let map: FrequencyMap<&Cave> = self.path.iter().filter(|&c| c.is_small()).collect();
-
-        map.entries()
-            .map(|(_, count)| *count as usize)
-            .max()
-            .unwrap_or(0)
-    }
-
-    pub fn append(&self, cave: Cave) -> CaveWithPath {
+    pub fn append(&self, cave: &'a Cave) -> CaveWithPath<'a> {
         let mut new_path = self.path.clone();
-        new_path.push(cave.clone());
+        new_path.push(cave);
+        let mut new_visited = self.visited.clone();
+        let is_newly_visited = new_visited.insert(cave.index());
+        let has_visited_twice = if !self.has_visited_twice && cave.is_small() {
+            !is_newly_visited
+        } else {
+            self.has_visited_twice
+        };
 
         CaveWithPath {
             path: new_path,
+            visited: new_visited,
+            has_visited_twice,
             last_cave: cave,
         }
     }
@@ -132,29 +150,26 @@ fn part1(cave_map: &CaveMap) -> i64 {
 fn part2(cave_map: &CaveMap) -> i64 {
     solve(cave_map, |path, next_cave| {
         // Allow visiting a single small cave at least once.
-        next_cave.is_big() || !path.is_visited(&next_cave) || path.max_small_cave_visits() < 2
+        next_cave.is_big() || !path.is_visited(&next_cave) || !path.has_visited_twice
     })
 }
 
 fn solve(cave_map: &CaveMap, can_visit: fn(&CaveWithPath, &Cave) -> bool) -> i64 {
-    // BFS, with partial results?
-    let mut frontier = vec![CaveWithPath::new(Cave::Start)];
+    let mut frontier = vec![CaveWithPath::new(&Cave::Start)];
     let mut paths = 0;
     while let Some(path) = frontier.pop() {
-        if path.last_cave == Cave::End {
-            // println!("===> {:?}", path.path);
+        if path.last_cave == &Cave::End {
             paths += 1;
             continue;
         }
 
-        for next_cave in cave_map.get(&path.last_cave).cloned().unwrap_or(vec![]) {
+        for next_cave in cave_map.get(&path.last_cave).unwrap() {
             // Avoid cycles.
-            if Some(next_cave.clone()) == path.last_step() {
+            if Some(next_cave) == path.last_step() {
                 continue;
             }
 
             if can_visit(&path, &next_cave) {
-                // println!("{:?} -> {:?}", path.path, next_cave);
                 frontier.push(path.append(next_cave));
             }
         }
