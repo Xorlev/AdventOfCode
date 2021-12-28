@@ -48,9 +48,9 @@ mod tests {
         let fish = SAMPLE_INPUT
             .split(',')
             .map(|value| value.parse().map_err(|e: ParseIntError| e.into()))
-            .collect::<AocResult<_>>()
+            .collect::<AocResult<Vec<_>>>()
             .unwrap();
 
-        assert_eq!(5934, part1(fish));
+        assert_eq!(5934, part1(&fish));
     }
 }
