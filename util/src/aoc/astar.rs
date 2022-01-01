@@ -7,29 +7,24 @@ use std::hash::Hash;
 type Cost = u32;
 
 #[derive(Eq, PartialEq, Debug)]
-pub struct AStarResult<T: Eq + Hash> {
-    pub failed: bool,
-    pub path: Vec<T>,
+pub enum AStarResult<T: Eq + Hash> {
+    Success(Vec<T>, u32),
+    Failed,
 }
 
-impl<T: Clone + Eq + Hash> AStarResult<T> {
-    fn from_path(start: T, path: HashMap<T, T>) -> AStarResult<T> {
-        let mut points = Vec::new();
-        points.push(start.to_owned());
-
+impl<T: Clone + Eq + Hash + Debug> AStarResult<T> {
+    fn from_path(start: T, predecessor: &HashMap<T, T>, cost: &HashMap<T, Cost>) -> AStarResult<T> {
+        let mut path = vec![start.clone()];
         let mut point = &start;
-        while let Some(next_point) = path.get(&point) {
-            let owned_point = next_point.to_owned();
-            points.push(owned_point);
+        while let Some(next_point) = predecessor.get(&point) {
+            path.push(next_point.clone());
             point = next_point;
         }
 
-        points.reverse();
+        path.reverse();
 
-        AStarResult {
-            failed: false,
-            path: points,
-        }
+        let total_cost = *cost.get(&path.iter().last().unwrap()).unwrap_or(&0);
+        AStarResult::Success(path, total_cost)
     }
 }
 
@@ -39,12 +34,12 @@ where
     T: Eq,
 {
     value: T,
-    cost: Cost,
+    estimated_cost: Cost,
 }
 
 impl<T: Eq> Ord for ValueWithCost<T> {
     fn cmp(&self, other: &ValueWithCost<T>) -> Ordering {
-        other.cost.cmp(&self.cost)
+        other.estimated_cost.cmp(&self.estimated_cost)
     }
 }
 
@@ -54,50 +49,59 @@ impl<T: Eq> PartialOrd for ValueWithCost<T> {
     }
 }
 
-pub fn search<T: Clone + Debug + Hash + Eq, HF: Fn(&T) -> Cost, MF: Fn(&T) -> Vec<T>>(
+pub fn search<
+    T: Clone + Debug + Hash + Eq,
+    HF: Fn(&T) -> Cost,
+    CF: Fn(&T, Option<&T>) -> Cost,
+    MIT: IntoIterator<Item = T>,
+    MF: Fn(&T) -> MIT,
+>(
     start: &T,
-    h_fn: HF,
+    heuristic_fn: HF,
+    cost_fn: CF,
     move_fn: MF,
 ) -> AStarResult<T> {
     let mut frontier: BinaryHeap<ValueWithCost<T>> = BinaryHeap::new();
     frontier.push(ValueWithCost {
-        value: start.to_owned(),
-        cost: h_fn(&start),
+        value: start.clone(),
+        estimated_cost: heuristic_fn(&start),
     });
-    let mut previous: HashMap<T, T> = HashMap::new();
+    let mut predecessor: HashMap<T, T> = HashMap::new();
     let mut path_cost: HashMap<T, Cost> = HashMap::new();
-    path_cost.insert(start.to_owned(), 0);
+    path_cost.insert(start.clone(), cost_fn(start, None));
 
-    while let Some(ValueWithCost { value, cost: _ }) = frontier.pop() {
-        if h_fn(&value) == 0 {
-            return AStarResult::from_path(value, previous);
+    while let Some(ValueWithCost {
+        value: current_value,
+        estimated_cost: _,
+    }) = frontier.pop()
+    {
+        if heuristic_fn(&current_value) == 0 {
+            return AStarResult::from_path(current_value, &predecessor, &path_cost);
         }
 
-        let new_cost = get_cost(&value, &path_cost).unwrap() + 1;
-        for new_value in move_fn(&value).into_iter() {
-            let current_cost = get_cost(&new_value, &path_cost);
-
-            if current_cost.is_none() || new_cost < current_cost.unwrap() {
-                let nv = new_value.to_owned();
-
+        for neighbor_value in move_fn(&current_value).into_iter() {
+            let new_cost = get_path_cost(&current_value, &path_cost).unwrap()
+                + cost_fn(&neighbor_value, Some(&current_value));
+            let current_cost = get_path_cost(&neighbor_value, &path_cost);
+            // Only re-explore a point if we haven't already visited it.
+            if current_cost.is_none() {
                 frontier.push(ValueWithCost {
-                    value: nv.to_owned(),
-                    cost: new_cost + h_fn(&new_value),
+                    value: neighbor_value.clone(),
+                    estimated_cost: new_cost + heuristic_fn(&neighbor_value),
                 });
+            }
 
-                path_cost.insert(nv.to_owned(), new_cost);
-                previous.insert(nv.to_owned(), value.to_owned());
+            if new_cost < current_cost.unwrap_or(u32::MAX) {
+                path_cost.insert(neighbor_value.clone(), new_cost);
+                predecessor.insert(neighbor_value, current_value.to_owned());
             }
         }
     }
 
-    AStarResult {
-        failed: true,
-        path: vec![],
-    }
+    AStarResult::Failed
 }
 
-fn get_cost<T: Clone + Hash + Eq>(value: &T, cost_map: &HashMap<T, Cost>) -> Option<u32> {
+fn get_path_cost<T: Clone + Hash + Eq>(value: &T, cost_map: &HashMap<T, Cost>) -> Option<u32> {
     match cost_map.get(value) {
         Some(cost) => Some(cost.clone()),
         _ => None,

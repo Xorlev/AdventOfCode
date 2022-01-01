@@ -1,11 +1,12 @@
 use crate::aoc::Point;
+use std::fmt::Debug;
 
 #[derive(Debug, Clone)]
 pub struct Grid<T> {
     states: Vec<Vec<T>>,
 }
 
-impl<T> Grid<T> {
+impl<T: Debug> Grid<T> {
     pub fn new(states: Vec<Vec<T>>) -> Grid<T> {
         Grid { states }
     }
@@ -37,6 +38,15 @@ impl<T> Grid<T> {
             y: 0,
         }
     }
+
+    pub fn print_grid(&self) {
+        for y in 0..self.states.len() {
+            for x in 0..self.states[y].len() {
+                print!("{:?}", self.states[y][x]);
+            }
+            println!();
+        }
+    }
 }
 
 pub struct PointIterator<'a, T> {
@@ -45,7 +55,7 @@ pub struct PointIterator<'a, T> {
     y: usize,
 }
 
-impl<'a, T> Iterator for PointIterator<'a, T> {
+impl<'a, T: Debug> Iterator for PointIterator<'a, T> {
     type Item = (Point, &'a T);
 
     fn next(&mut self) -> Option<Self::Item> {
