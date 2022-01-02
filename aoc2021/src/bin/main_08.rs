@@ -1,5 +1,5 @@
 use itertools::{Itertools, MinMaxResult};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::num::ParseIntError;
 use std::str::FromStr;
 use util::aoc::frequency::FrequencyMap;
@@ -9,6 +9,7 @@ fn main() -> AocResult<()> {
     let input: Vec<(Vec<String>, Vec<String>)> = parse(input::read(8)?);
 
     result("Part 1", || part1(&input));
+    result("Part 2", || part2(&input));
 
     Ok(())
 }
@@ -38,46 +39,65 @@ fn part1(inputs: &[(Vec<String>, Vec<String>)]) -> i32 {
 }
 
 fn part2(inputs: &[(Vec<String>, Vec<String>)]) -> i32 {
-
-    // 7 letters: 8
-    // 4 letters: 4
-    // 3 letters: 7
-    // 2 letters: 1
-
-    // If we see two letters, we know those are the right-most values, but not top vs. bottom.
-    // Three letters can tell us what the top row is, if we have a two-letter.
-    // 4 tells us left-upper, right-upper, center, and bottom-right. With a 4 and a 1, we can determine top right + bottom-right.
-    // 8 is useless as it lights up the whole panel.
-    // All we need is 5+6 letters...
-
-    // Once we have mappings, then we need to turn the signals back into values
+    inputs
+        .iter()
+        .map(|(signals, outputs)| decode_line(signals, outputs))
+        .sum()
 }
 
-fn decode_line(input: &[String]) -> Decoder {
-    // First, group + sort all signals.
-}
+fn decode_line(signals: &[String], outputs: &[String]) -> i32 {
+    let signals_by_length = signals
+        .iter()
+        .map(|signal| signal.chars().collect::<HashSet<_>>())
+        .filter(|s| s.len() == 2 || s.len() == 4)
+        .fold(HashMap::new(), |mut acc, s| {
+            acc.insert(s.len(), s);
+            acc
+        });
 
-struct Decoder {
-    key: HashMap<&str, char>,
-}
-
-impl Decoder {
-    fn decode(&self, digits: &str) -> i32 {
-        digits.split_whitespace()
-            .map(|digit| digit.chars().sorted().collect::<String>())
-
-        0
+    let mut digits = String::new();
+    for output in outputs {
+        match output.len() {
+            2 => digits += "1",
+            3 => digits += "7",
+            4 => digits += "4",
+            7 => digits += "8",
+            5 => {
+                let chars = output.chars().collect::<HashSet<_>>();
+                if intersection_count(&signals_by_length, &chars, 2) == 2 {
+                    digits += "3"
+                } else if intersection_count(&signals_by_length, &chars, 4) == 2 {
+                    digits += "2"
+                } else {
+                    digits += "5"
+                }
+            }
+            6 => {
+                let chars = output.chars().collect::<HashSet<_>>();
+                if intersection_count(&signals_by_length, &chars, 2) == 1 {
+                    digits += "6"
+                } else if intersection_count(&signals_by_length, &chars, 4) == 4 {
+                    digits += "9"
+                } else {
+                    digits += "0"
+                }
+            }
+            _ => panic!("Unexpected length: {}", output),
+        }
     }
+
+    digits.parse().expect("expected an i32")
 }
 
-enum Signal {
-    Top,
-    UpperLeft,
-    UpperRight,
-    Middle,
-    BottomLeft,
-    BottomRight,
-    Bottom,
+fn intersection_count(
+    signals_by_length: &HashMap<usize, HashSet<char>>,
+    chars: &HashSet<char>,
+    length: usize,
+) -> usize {
+    signals_by_length
+        .get(&length)
+        .map(|signal| chars.intersection(signal).count())
+        .unwrap_or(0)
 }
 
 #[cfg(test)]
@@ -100,5 +120,22 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
         let patterns = parse(SAMPLE_INPUT.lines().map(|s| s.to_string()).collect_vec());
 
         assert_eq!(26, part1(&patterns));
+    }
+
+    #[test]
+    fn part2_sample() {
+        let patterns = parse(SAMPLE_INPUT.lines().map(|s| s.to_string()).collect_vec());
+
+        assert_eq!(61229, part2(&patterns));
+    }
+
+    #[test]
+    fn decode_test() {
+        let samples = parse(vec![
+            "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"
+                .to_string(),
+        ]);
+
+        assert_eq!(5353, decode_line(&samples[0].0, &samples[0].1));
     }
 }

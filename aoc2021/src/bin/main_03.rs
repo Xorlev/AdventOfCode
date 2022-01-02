@@ -170,6 +170,7 @@ impl<T: Clone + Eq + Hash> ColumnValues<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use itertools::Itertools;
 
     const SAMPLE_INPUT: &'static str = r#"00100
 11110

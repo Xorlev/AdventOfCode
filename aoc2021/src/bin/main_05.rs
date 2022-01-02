@@ -82,7 +82,7 @@ mod tests {
     }
 
     #[test]
-    fn part1_sample() {
+    fn part2_sample() {
         let vents = parse(SAMPLE_INPUT.lines().map(|l| l.to_string()).collect()).unwrap();
 
         assert_eq!(12, part2(&vents));

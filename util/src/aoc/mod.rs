@@ -1,4 +1,4 @@
-use std::fmt::{Debug, Display};
+use std::fmt::{Debug, Display, Formatter};
 use std::ops::{Add, AddAssign, Mul, Sub};
 use std::str::FromStr;
 use std::time::Instant;
@@ -6,6 +6,7 @@ use std::time::Instant;
 pub mod astar;
 pub mod digits;
 pub mod frequency;
+pub mod grid;
 pub mod input;
 pub mod lines;
 pub mod linked_list;
@@ -88,6 +89,12 @@ impl Point {
 
     pub fn to_index(&self, x_max: usize) -> usize {
         (self.y * x_max as i32 + self.x) as usize
+    }
+}
+
+impl Display for Point {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
     }
 }
 

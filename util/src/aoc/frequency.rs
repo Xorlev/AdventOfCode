@@ -15,19 +15,27 @@ impl<T: Eq + Hash> FrequencyMap<T> {
         }
     }
 
-    pub fn add(&mut self, value: T) {
-        match self.counts.entry(value) {
+    pub fn add(&mut self, key: T) {
+        self.multi_add(key, 1)
+    }
+
+    pub fn multi_add(&mut self, key: T, value: u64) {
+        match self.counts.entry(key) {
             Entry::Vacant(count) => {
-                count.insert(1);
+                count.insert(value);
             }
             Entry::Occupied(mut count) => {
-                *count.get_mut() += 1;
+                *count.get_mut() += value;
             }
         }
     }
 
     pub fn count(&self, value: &T) -> u64 {
         self.counts.get(value).cloned().unwrap_or(0)
+    }
+
+    pub fn keys(&self) -> impl Iterator<Item = &T> {
+        self.counts.keys()
     }
 
     pub fn entries(&self) -> impl Iterator<Item = (&T, &u64)> {
