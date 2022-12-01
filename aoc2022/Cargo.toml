@@ -1,0 +1,16 @@
+[package]
+name = "aoc2022"
+version = "0.1.0"
+authors = ["Michael Rose <elementation@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+bit-set = "0.5"
+chrono = "0.4"
+failure = "0.1"
+itertools = "0.10"
+nom = "7.1"
+num = "0.2"
+lazy_static = "1.2"
+util = { path = "../util" }
+regex = "1.1"

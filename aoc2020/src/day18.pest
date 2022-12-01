@@ -8,6 +8,4 @@ operation = _{ add | multiply }
 expr = { term ~ (operation ~ term)* }
 term = _{ num | "(" ~ expr ~ ")" }
 
-calculation = _{ SOI ~ expr ~ EOI }
-
 WHITESPACE = _{ " " | "\t" }
