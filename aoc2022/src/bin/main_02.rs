@@ -74,21 +74,9 @@ enum Outcome {
 impl Outcome {
     fn outcome_to_move(&self, opponent_move: &Move) -> Move {
         match self {
-            Outcome::Win => match opponent_move {
-                Move::Rock => Move::Paper,
-                Move::Paper => Move::Scissors,
-                Move::Scissors => Move::Rock,
-            },
-            Outcome::Loss => match opponent_move {
-                Move::Rock => Move::Scissors,
-                Move::Paper => Move::Rock,
-                Move::Scissors => Move::Paper,
-            },
-            Outcome::Draw => match opponent_move {
-                Move::Rock => Move::Rock,
-                Move::Paper => Move::Paper,
-                Move::Scissors => Move::Scissors,
-            },
+            Outcome::Win => opponent_move.successor(),
+            Outcome::Loss => opponent_move.successor().successor(),
+            Outcome::Draw => *opponent_move,
         }
     }
 }
@@ -106,7 +94,7 @@ impl FromStr for Outcome {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 enum Move {
     Rock,
     Paper,
@@ -122,23 +110,21 @@ impl Move {
         }
     }
 
-    fn move_to_outcome(&self, other: &Move) -> Outcome {
+    fn successor(&self) -> Move {
         match self {
-            Move::Rock => match other {
-                Move::Rock => Outcome::Draw,
-                Move::Paper => Outcome::Loss,
-                Move::Scissors => Outcome::Win,
-            },
-            Move::Paper => match other {
-                Move::Rock => Outcome::Win,
-                Move::Paper => Outcome::Draw,
-                Move::Scissors => Outcome::Loss,
-            },
-            Move::Scissors => match other {
-                Move::Rock => Outcome::Loss,
-                Move::Paper => Outcome::Win,
-                Move::Scissors => Outcome::Draw,
-            },
+            Move::Rock => Move::Paper,
+            Move::Paper => Move::Scissors,
+            Move::Scissors => Move::Rock,
+        }
+    }
+
+    fn move_to_outcome(&self, other: &Move) -> Outcome {
+        if self == other {
+            Outcome::Draw
+        } else if self.successor() == *other {
+            Outcome::Loss
+        } else {
+            Outcome::Win
         }
     }
 }
