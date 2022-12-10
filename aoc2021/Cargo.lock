@@ -380,6 +380,7 @@ name = "util"
 version = "0.1.0"
 dependencies = [
  "failure",
+ "itertools",
  "noisy_float",
  "regex",
  "streaming-stats",
