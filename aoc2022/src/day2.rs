@@ -1,40 +1,36 @@
+use aoc_runner_derive::{aoc, aoc_generator};
 use failure::bail;
 use itertools::Itertools;
 use std::str::FromStr;
 use util::aoc::*;
 
-fn main() -> AocResult<()> {
-    let lines: Vec<String> = input::read(2)?;
-    let strategy_guide: Vec<(Move, String)> = parse(lines)?;
-
-    result("Part 1", || part1(&strategy_guide).unwrap());
-    result("Part 2", || part2(&strategy_guide).unwrap());
-
-    Ok(())
-}
-
-fn parse(lines: Vec<String>) -> AocResult<Vec<(Move, String)>> {
-    lines
-        .iter()
+#[aoc_generator(day2)]
+fn parse(input: &str) -> Result<Vec<(Move, String)>, failure::Error> {
+    input
+        .lines()
         .map(|line| match line.split_whitespace().collect_vec()[..] {
             [l, r] => Ok((l.parse::<Move>()?, r.to_string())),
             _ => bail!("Unsupported move pair: {:?}", line),
         })
-        .collect::<AocResult<Vec<_>>>()
+        .collect::<Result<Vec<_>, failure::Error>>()
 }
 
-fn part1(strategy_guide: &[(Move, String)]) -> AocResult<i32> {
+#[aoc(day2, part1)]
+fn part1(strategy_guide: &[(Move, String)]) -> i32 {
     strategy_guide
         .iter()
         .map(|(opponent_move, player_move)| evaluate_move_pair_p1(player_move, *opponent_move))
-        .sum()
+        .sum::<AocResult<_>>()
+        .unwrap()
 }
 
-fn part2(strategy_guide: &[(Move, String)]) -> AocResult<i32> {
+#[aoc(day2, part2)]
+fn part2(strategy_guide: &[(Move, String)]) -> i32 {
     strategy_guide
         .iter()
         .map(|(opponent_move, round_outcome)| evaluate_move_pair_p2(round_outcome, *opponent_move))
-        .sum()
+        .sum::<AocResult<_>>()
+        .unwrap()
 }
 
 fn evaluate_move_pair_p1(player_move: &str, opponent_move: Move) -> AocResult<i32> {
@@ -150,10 +146,7 @@ mod tests {
     fn rps_p1() {
         let input = "A Y
 B X
-C Z"
-        .split('\n')
-        .map(|s| s.to_string())
-        .collect_vec();
+C Z";
 
         let vec = parse(input).unwrap();
         assert_eq!(15, part1(&vec));
@@ -163,10 +156,7 @@ C Z"
     fn rps_p2() {
         let input = "A Y
 B X
-C Z"
-        .split('\n')
-        .map(|s| s.to_string())
-        .collect_vec();
+C Z";
 
         let vec = parse(input).unwrap();
         assert_eq!(12, part2(&vec));

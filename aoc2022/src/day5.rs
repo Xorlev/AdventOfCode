@@ -1,8 +1,8 @@
+use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::VecDeque;
-use util::aoc::*;
 
 lazy_static! {
     static ref RE: Regex = Regex::new("move (\\d+) from (\\d+) to (\\d+)").unwrap();
@@ -33,15 +33,16 @@ impl Input {
     }
 }
 
-fn main() -> AocResult<()> {
-    let input = parse(&input::read_all(5)?);
-
-    result("Part 1", || part1(&input));
-    result("Part 2", || part2(&input));
-
-    Ok(())
+#[aoc_generator(day5)]
+fn parse(input: &str) -> Input {
+    let parts = input.split("\n\n").collect_vec();
+    Input {
+        stacks: parse_stacks(parts[0]),
+        move_ops: parse_move_ops(parts[1]),
+    }
 }
 
+#[aoc(day5, part1)]
 fn part1(input: &Input) -> String {
     let mut input = input.clone();
     for move_op in &input.move_ops {
@@ -55,6 +56,7 @@ fn part1(input: &Input) -> String {
     input.top_of_stacks()
 }
 
+#[aoc(day5, part2)]
 fn part2(input: &Input) -> String {
     let mut input = input.clone();
     for move_op in &input.move_ops {
@@ -68,17 +70,6 @@ fn part2(input: &Input) -> String {
     }
 
     input.top_of_stacks()
-}
-
-fn parse(input: &str) -> Input {
-    let parts = input.split("\n\n").collect_vec();
-
-    // Parse each column into stacks
-
-    Input {
-        stacks: parse_stacks(parts[0]),
-        move_ops: parse_move_ops(parts[1]),
-    }
 }
 
 fn parse_stacks(input: &str) -> Vec<VecDeque<char>> {

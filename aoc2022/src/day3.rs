@@ -1,6 +1,6 @@
+use aoc_runner_derive::{aoc, aoc_generator};
 use bit_set::BitSet;
 use itertools::Itertools;
-use util::aoc::*;
 
 #[derive(Debug)]
 struct Rucksack {
@@ -9,19 +9,10 @@ struct Rucksack {
     compartment_two: BitSet,
 }
 
-fn main() -> AocResult<()> {
-    let lines: Vec<String> = input::read(3)?;
-    let rucksacks = parse(&lines);
-
-    result("Part 1", || part1(&rucksacks));
-    result("Part 2", || part2(&rucksacks));
-
-    Ok(())
-}
-
-fn parse(lines: &[String]) -> Vec<Rucksack> {
-    lines
-        .iter()
+#[aoc_generator(day3)]
+fn parse(input: &str) -> Vec<Rucksack> {
+    input
+        .lines()
         .map(|line| {
             let (one, two) = line.split_at(line.len() / 2);
 
@@ -36,10 +27,7 @@ fn parse(lines: &[String]) -> Vec<Rucksack> {
         .collect()
 }
 
-fn build_bitset(string: &str) -> BitSet {
-    string.chars().map(|c| priority(c) as usize).collect()
-}
-
+#[aoc(day3, part1)]
 fn part1(rucksacks: &[Rucksack]) -> i32 {
     rucksacks
         .iter()
@@ -47,6 +35,7 @@ fn part1(rucksacks: &[Rucksack]) -> i32 {
         .sum()
 }
 
+#[aoc(day3, part2)]
 fn part2(rucksacks: &[Rucksack]) -> i32 {
     rucksacks
         .iter()
@@ -54,6 +43,10 @@ fn part2(rucksacks: &[Rucksack]) -> i32 {
         .into_iter()
         .map(intersect_groups)
         .sum()
+}
+
+fn build_bitset(string: &str) -> BitSet {
+    string.chars().map(|c| priority(c) as usize).collect()
 }
 
 fn intersect_groups<'a>(group: impl Iterator<Item = &'a Rucksack>) -> i32 {
@@ -105,7 +98,7 @@ PmmdzqPrVvPwwTWBwg
 wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw";
-        let rucksacks = parse(input.lines().map(|line| line.to_string()).collect());
+        let rucksacks = parse(input);
 
         assert_eq!(157, part1(&rucksacks));
     }
@@ -118,7 +111,7 @@ PmmdzqPrVvPwwTWBwg
 wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw";
-        let rucksacks = parse(input.lines().map(|line| line.to_string()).collect());
+        let rucksacks = parse(input);
 
         assert_eq!(70, part2(&rucksacks));
     }

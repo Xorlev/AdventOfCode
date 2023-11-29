@@ -1,38 +1,43 @@
+use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
-use util::aoc::*;
 use util::aoc::top_k::TopK;
 
-fn main() -> AocResult<()> {
-    let lines: Vec<String> = input::read(1)?;
-    let carried_calories: Vec<Vec<i32>> = lines.iter().batching(|line_iter| {
-        let elf_calories: Vec<i32> = line_iter.take_while(|line| !line.is_empty()).map(|line| line.parse().unwrap()).collect();
-        if elf_calories.len() > 0 {
-            Some(elf_calories)
-        } else {
-            None
-        }
-    }).collect();
-
-    result("Part 1", || part1(&carried_calories));
-    result("Part 2", || part2(&carried_calories));
-
-    Ok(())
+#[aoc_generator(day1)]
+fn parse(input: &str) -> Vec<Vec<i32>> {
+    input
+        .lines()
+        .batching(|line_iter| {
+            let elf_calories: Vec<i32> = line_iter
+                .take_while(|line| !line.is_empty())
+                .map(|line| line.parse().unwrap())
+                .collect();
+            if elf_calories.len() > 0 {
+                Some(elf_calories)
+            } else {
+                None
+            }
+        })
+        .collect()
 }
 
+#[aoc(day1, part1)]
 fn part1(carried_calories: &[Vec<i32>]) -> i32 {
     carried_calories
         .iter()
         .map(|food| food.iter().sum())
-        .max().unwrap_or(-1)
+        .max()
+        .unwrap_or(-1)
 }
 
+#[aoc(day1, part2)]
 fn part2(carried_calories: &[Vec<i32>]) -> i32 {
     carried_calories
         .iter()
         .map(|food| food.iter().sum())
-        .topk(3).iter().sum()
+        .topk(3)
+        .iter()
+        .sum()
 }
-
 
 #[cfg(test)]
 mod tests {
