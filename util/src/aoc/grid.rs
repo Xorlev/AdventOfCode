@@ -1,5 +1,6 @@
 use crate::aoc::Point;
 use std::fmt::Debug;
+use std::ops::Add;
 
 #[derive(Debug, Clone)]
 pub struct Grid<T> {
@@ -39,13 +40,30 @@ impl<T: Debug> Grid<T> {
         }
     }
 
+    pub fn perimeter_iterator(&self) -> PerimeterIterator<T> {
+        PerimeterIterator {
+            grid: self,
+            x: 0,
+            y: 0,
+            direction: Direction::Right,
+        }
+    }
+
     pub fn print_grid(&self) {
-        for y in 0..self.states.len() {
-            for x in 0..self.states[y].len() {
+        for y in 0..self.y_len() {
+            for x in 0..self.x_len() {
                 print!("{:?}", self.states[y][x]);
             }
             println!();
         }
+    }
+
+    pub fn x_len(&self) -> usize {
+        self.states[0].len()
+    }
+
+    pub fn y_len(&self) -> usize {
+        self.states.len()
     }
 }
 
@@ -71,5 +89,62 @@ impl<'a, T: Debug> Iterator for PointIterator<'a, T> {
         } else {
             None
         }
+    }
+}
+
+enum Direction {
+    Right,
+    Down,
+    Left,
+    Up,
+}
+
+impl Direction {
+    fn apply(&self, point: Point) -> Point {
+        match self {
+            Direction::Right => point + Point::new(1, 0),
+            Direction::Down => point + Point::new(0, 1),
+            Direction::Left => point + Point::new(-1, 0),
+            Direction::Up => point + Point::new(0, -1),
+        }
+    }
+}
+
+pub struct PerimeterIterator<'a, T> {
+    grid: &'a Grid<T>,
+    x: usize,
+    y: usize,
+    direction: Direction,
+}
+
+impl<'a, T: Debug> Iterator for PerimeterIterator<'a, T> {
+    type Item = (Point, &'a T);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let point = Point::new(self.x as i32, self.y as i32);
+
+        // (0,0) -> (X,0)
+        // (X,0) -> (X,Y)
+        // (X,Y) -> (0,Y)
+        // (0,Y) -> (0,1) (to avoid a repeat)
+
+        if self.x == self.grid.x_len() - 1 && self.y == 0 {
+            self.direction = Direction::Down;
+        }
+        if self.x == self.grid.x_len() - 1 && self.y == self.grid.y_len() - 1 {
+            self.direction = Direction::Left;
+        }
+        if self.x == 0 && self.y == self.grid.y_len() - 1 {
+            self.direction = Direction::Up;
+        }
+        if matches!(self.direction, Direction::Up) && self.y == 0 {
+            return None;
+        }
+
+        let next_point = self.direction.apply(point);
+        self.x = next_point.x as usize;
+        self.y = next_point.y as usize;
+
+        self.grid.lookup(&point).map(|value| (point, value))
     }
 }
