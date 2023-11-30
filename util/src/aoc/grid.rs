@@ -1,6 +1,5 @@
 use crate::aoc::Point;
 use std::fmt::Debug;
-use std::ops::Add;
 
 #[derive(Debug, Clone)]
 pub struct Grid<T> {
@@ -92,7 +91,8 @@ impl<'a, T: Debug> Iterator for PointIterator<'a, T> {
     }
 }
 
-enum Direction {
+#[derive(Debug)]
+pub enum Direction {
     Right,
     Down,
     Left,
@@ -100,13 +100,16 @@ enum Direction {
 }
 
 impl Direction {
-    fn apply(&self, point: Point) -> Point {
+    pub fn delta(&self) -> Point {
         match self {
-            Direction::Right => point + Point::new(1, 0),
-            Direction::Down => point + Point::new(0, 1),
-            Direction::Left => point + Point::new(-1, 0),
-            Direction::Up => point + Point::new(0, -1),
+            Direction::Right => Point::new(1, 0),
+            Direction::Down => Point::new(0, 1),
+            Direction::Left => Point::new(-1, 0),
+            Direction::Up => Point::new(0, -1),
         }
+    }
+    pub fn apply(&self, point: Point) -> Point {
+        point + self.delta()
     }
 }
 
