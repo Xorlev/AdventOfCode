@@ -1,5 +1,5 @@
 use crate::day13::Outcome::{Continue, OutOfOrder};
-use itertools::{concat, EitherOrBoth, Itertools};
+use itertools::{EitherOrBoth, Itertools};
 use nom::{
     branch::alt,
     character::complete::char,
