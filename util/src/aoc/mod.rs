@@ -1,3 +1,5 @@
+use failure::bail;
+use itertools::Itertools;
 use std::fmt::{Debug, Display, Formatter};
 use std::ops::{Add, AddAssign, Mul, Sub};
 use std::str::FromStr;
@@ -99,6 +101,19 @@ impl Point {
 impl Display for Point {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "({}, {})", self.x, self.y)
+    }
+}
+
+impl FromStr for Point {
+    type Err = failure::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let vec = s.split(",").filter(|v| !v.is_empty()).collect_vec();
+        if vec.len() != 2 {
+            bail!("Expected two elements, found: {:?}", vec);
+        }
+
+        Ok(Point::new(vec[0].parse()?, vec[1].parse()?))
     }
 }
 
