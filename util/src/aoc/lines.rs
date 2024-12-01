@@ -1,4 +1,4 @@
-use aoc::Point;
+use crate::aoc::Point;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LineSegment {

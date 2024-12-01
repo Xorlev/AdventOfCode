@@ -5,9 +5,9 @@ pub trait TopK: Iterator {
     /// Calculates a rolling Top-K set of items from an iterator in constant space.
     /// Returns a sorted vector of the top-k elements, sorted descending.
     fn topk(self, k: usize) -> Vec<Self::Item>
-        where
-            Self: Sized,
-            Self::Item: Ord,
+    where
+        Self: Sized,
+        Self::Item: Ord,
     {
         let mut heap = BinaryHeap::<Reverse<Self::Item>>::with_capacity(k + 1);
 
@@ -19,7 +19,8 @@ pub trait TopK: Iterator {
             }
         });
 
-        let mut vec: Vec<Self::Item> = itertools::unfold(heap, |heap| heap.pop().map(|item| item.0)).collect();
+        let mut vec: Vec<Self::Item> =
+            std::iter::from_fn(move || heap.pop().map(|item| item.0)).collect();
         vec.reverse();
         vec
     }

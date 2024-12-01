@@ -2,10 +2,11 @@
 name = "util"
 version = "0.1.0"
 authors = ["Michael Rose <elementation@gmail.com>"]
+edition = "2021"
 
 [dependencies]
 failure = "0.1"
 regex = "*"
-itertools = "0.10"
-streaming-stats = "0.1"
-noisy_float = "0.1.2"
+itertools = "0.13.0"
+streaming-stats = "0.2.3"
+noisy_float = "0.2.0"

@@ -1,35 +1,23 @@
 use itertools::Itertools;
+use lazy_static::lazy_static;
 use std::fmt::{Debug, Display, Formatter};
 use util::aoc::grid::HashGrid;
 use util::aoc::lines::LineSegment;
 use util::aoc::Point;
 
-#[derive(Copy, Clone, Debug)]
+lazy_static! {
+    static ref RE: Regex = Regex::new(
+        "Sensor at x=([0-9-]+), y=([0-9-]+) closest beacon is at x=([0-9-]+), y=([0-9-]+)"
+    )
+    .unwrap();
+}
+
 enum Item {
-    Air,
-    Rock,
-    Sand,
+    Sensor,
+    Beacon,
 }
 
-impl Display for Item {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Item::Air => write!(f, "."),
-            Item::Rock => write!(f, "#"),
-            Item::Sand => write!(f, "o"),
-        }
-    }
-}
-
-impl Default for Item {
-    fn default() -> Self {
-        Self::Air
-    }
-}
-
-const ORIGIN: Point = Point::new(500, 0);
-
-#[aoc_generator(day14)]
+#[aoc_generator(day15)]
 fn parse(input: &str) -> HashGrid<Item> {
     // Turn into LineSegments.
     let segments = input
@@ -53,7 +41,7 @@ fn parse(input: &str) -> HashGrid<Item> {
     grid
 }
 
-#[aoc(day14, part1)]
+#[aoc(day15, part1)]
 fn part1(input: &HashGrid<Item>) -> usize {
     let mut grid = input.clone();
     let mut iterations = 0;
@@ -71,7 +59,7 @@ fn part1(input: &HashGrid<Item>) -> usize {
     iterations
 }
 
-#[aoc(day14, part2)]
+#[aoc(day15, part2)]
 fn part2(input: &HashGrid<Item>) -> usize {
     let mut grid = input.clone();
     let mut iterations = 0;
@@ -143,8 +131,20 @@ fn next_move(point: Point) -> [Point; 3] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    const INPUT: &str = "498,4 -> 498,6 -> 496,6
-503,4 -> 502,4 -> 502,9 -> 494,9";
+    const INPUT: &str = "Sensor at x=2, y=18: closest beacon is at x=-2, y=15
+Sensor at x=9, y=16: closest beacon is at x=10, y=16
+Sensor at x=13, y=2: closest beacon is at x=15, y=3
+Sensor at x=12, y=14: closest beacon is at x=10, y=16
+Sensor at x=10, y=20: closest beacon is at x=10, y=16
+Sensor at x=14, y=17: closest beacon is at x=10, y=16
+Sensor at x=8, y=7: closest beacon is at x=2, y=10
+Sensor at x=2, y=0: closest beacon is at x=2, y=10
+Sensor at x=0, y=11: closest beacon is at x=2, y=10
+Sensor at x=20, y=14: closest beacon is at x=25, y=17
+Sensor at x=17, y=20: closest beacon is at x=21, y=22
+Sensor at x=16, y=7: closest beacon is at x=15, y=3
+Sensor at x=14, y=3: closest beacon is at x=15, y=3
+Sensor at x=20, y=1: closest beacon is at x=15, y=3";
 
     #[test]
     fn p1() {

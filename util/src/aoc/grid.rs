@@ -231,6 +231,7 @@ impl<T: Debug + Display> HashGrid<T> {
         }
     }
 
+    #[allow(dead_code)]
     fn print_grid(&self) {
         if let ((Some(min_x), Some(min_y)), (Some(max_x), Some(max_y))) =
             ((self.min_x, self.min_y), (self.max_x, self.max_y))
